@@ -2,7 +2,7 @@
 import React from 'react';
 import { FileCode, FileText, FileCheck } from 'lucide-react';
 
-type OutputType = 'code' | 'paper' | 'patent';
+export type OutputType = 'code' | 'paper' | 'patent';
 
 interface OutputTypeIconProps {
   type: OutputType;

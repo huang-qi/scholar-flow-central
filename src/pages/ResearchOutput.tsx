@@ -11,7 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import OutputTypeIcon from '@/components/OutputTypeIcon';
+import OutputTypeIcon, { OutputType } from '@/components/OutputTypeIcon';
+import BarChart from '@/components/charts/BarChart';
 
 // Example data for research outputs
 const researchOutputs = [
@@ -19,7 +20,7 @@ const researchOutputs = [
     id: 1,
     title: "Deep Learning for Medical Image Segmentation",
     authors: ["John Smith", "Jane Doe"],
-    type: "paper",
+    type: 'paper' as OutputType,
     year: 2023,
     journal: "IEEE Transactions on Medical Imaging",
     abstract: "This paper presents a novel approach for medical image segmentation using deep learning...",
@@ -30,7 +31,7 @@ const researchOutputs = [
     id: 2,
     title: "A Novel Algorithm for Anomaly Detection in Time Series Data",
     authors: ["Alice Johnson", "Bob Williams"],
-    type: "code",
+    type: 'code' as OutputType,
     year: 2022,
     journal: "Journal of Machine Learning Research",
     abstract: "We introduce a new algorithm for detecting anomalies in time series data with high accuracy and low computational cost...",
@@ -41,7 +42,7 @@ const researchOutputs = [
     id: 3,
     title: "System and Method for Automated Patent Claim Generation",
     authors: ["Emily Brown", "David Garcia"],
-    type: "patent",
+    type: 'patent' as OutputType,
     year: 2021,
     abstract: "This patent describes a system and method for automatically generating patent claims based on a given invention disclosure...",
     keywords: ["patent claim generation", "automation", "intellectual property"],
@@ -51,7 +52,7 @@ const researchOutputs = [
     id: 4,
     title: "Graph Neural Networks for Drug Discovery",
     authors: ["Sarah Lee", "Michael Chen"],
-    type: "paper",
+    type: 'paper' as OutputType,
     year: 2023,
     journal: "Bioinformatics",
     abstract: "We explore the use of graph neural networks for predicting drug-target interactions and identifying potential drug candidates...",
@@ -62,7 +63,7 @@ const researchOutputs = [
     id: 5,
     title: "Open Source Library for Data Visualization",
     authors: ["Kevin Rodriguez", "Linda Nguyen"],
-    type: "code",
+    type: 'code' as OutputType,
     year: 2022,
     abstract: "An open-source library providing a wide range of data visualization tools and techniques for various data types and formats...",
     keywords: ["data visualization", "open source", "visualization tools"],
@@ -72,7 +73,7 @@ const researchOutputs = [
     id: 6,
     title: "Method for Securing Wireless Communication Networks",
     authors: ["Brian Wilson", "Jessica Martinez"],
-    type: "patent",
+    type: 'patent' as OutputType,
     year: 2020,
     abstract: "A method for enhancing the security of wireless communication networks against various types of cyber attacks and intrusions...",
     keywords: ["wireless communication", "network security", "cybersecurity"],
@@ -92,7 +93,7 @@ const ResearchOutput = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [yearFilter, setYearFilter] = useState<string>("");
-  
+
   // Filter outputs based on search term, year, and active tab
   const filteredOutputs = researchOutputs.filter(output => {
     const matchesSearch = output.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
