@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart } from "@/components/ui/chart";
+import { BarChart } from "@/components/charts/BarChart";
 import { 
   Search, BarChart2, FileText, Code, Award,
   ExternalLink, Download, Eye, Upload, Filter

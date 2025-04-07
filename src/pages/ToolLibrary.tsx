@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Search, Tool, Star, Upload, ExternalLink, 
+  Search, Wrench, Star, Upload, ExternalLink, 
   Download, Play, Eye, HeartIcon
 } from "lucide-react";
 import {
@@ -150,17 +149,14 @@ const ToolLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
-  // Get unique tool types
   const toolTypes = Array.from(new Set(sampleTools.map(tool => tool.type))).sort();
 
   const filteredTools = sampleTools.filter(tool => {
-    // Filter by search query
     const matchesSearch = !searchQuery || 
       tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    // Filter by type
     const matchesType = !selectedType || tool.type === selectedType;
     
     return matchesSearch && matchesType;
@@ -191,7 +187,7 @@ const ToolLibrary = () => {
             <Select onValueChange={(value) => setSelectedType(value === "all" ? null : value)}>
               <SelectTrigger className="w-[180px]">
                 <div className="flex items-center">
-                  <Tool className="h-4 w-4 mr-2" />
+                  <Wrench className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Tool type" />
                 </div>
               </SelectTrigger>
@@ -220,7 +216,7 @@ const ToolLibrary = () => {
                 ))
               ) : (
                 <div className="text-center py-12">
-                  <Tool className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-medium">No tools found</h3>
                   <p className="text-sm text-muted-foreground">
                     Try adjusting your search or filter criteria
@@ -231,7 +227,6 @@ const ToolLibrary = () => {
           </TabsContent>
           <TabsContent value="favorites">
             <div className="grid grid-cols-1 gap-4">
-              {/* Just showing a couple of sample favorites */}
               {sampleTools.slice(1, 3).map(tool => (
                 <ToolCard key={tool.id} tool={tool} />
               ))}
@@ -239,7 +234,6 @@ const ToolLibrary = () => {
           </TabsContent>
           <TabsContent value="recent">
             <div className="grid grid-cols-1 gap-4">
-              {/* Just showing a couple of recently used tools */}
               {sampleTools.slice(0, 2).map(tool => (
                 <ToolCard key={tool.id} tool={tool} />
               ))}
@@ -247,7 +241,6 @@ const ToolLibrary = () => {
           </TabsContent>
           <TabsContent value="my">
             <div className="grid grid-cols-1 gap-4">
-              {/* Just showing tools by the current user */}
               {sampleTools.filter(tool => tool.author === "David Bennett").map(tool => (
                 <ToolCard key={tool.id} tool={tool} />
               ))}

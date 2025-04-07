@@ -1,15 +1,13 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowUpRight, Book, FileText, Tool, User, MessageSquare } from "lucide-react";
+import { ArrowUpRight, Book, FileText, Wrench, User, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { BarChart } from "@/components/ui/chart";
+import { BarChart } from "@/components/charts/BarChart";
 
 const ActivityHeatmap = () => {
-  // This would fetch real activity data in a production app
   const generateActivityData = () => {
     const today = new Date();
     const daysToShow = 90; // ~3 months
@@ -19,7 +17,6 @@ const ActivityHeatmap = () => {
       const date = new Date();
       date.setDate(today.getDate() - i);
       
-      // Generate random activity level (0-4)
       const level = Math.floor(Math.random() * 5);
       
       data.push({
@@ -66,7 +63,6 @@ const ActivityHeatmap = () => {
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Sample data for charts
   const contributionData = {
     categories: ["Reports", "Literature", "Research", "Tools", "Comments"],
     series: [
@@ -147,7 +143,7 @@ const Dashboard = () => {
 
             <div className="flex items-start gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                <Tool className="h-4 w-4 text-primary" />
+                <Wrench className="h-4 w-4 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium">New AI tool added: "Image Segmentation API"</p>

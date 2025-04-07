@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   BarChart2, Book, FileText, Inbox, 
-  Info, LayoutDashboard, Settings, Tool
+  Info, LayoutDashboard, Settings, Wrench
 } from "lucide-react";
 
 interface SideNavigationProps {
@@ -33,7 +33,7 @@ const navItems = [
   },
   {
     title: "AI Tool Library",
-    icon: Tool,
+    icon: Wrench,
     path: "/tools",
   },
   {
