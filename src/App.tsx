@@ -1,10 +1,20 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+
+import Dashboard from "./pages/Dashboard";
+import ReportHub from "./pages/ReportHub";
+import LiteratureManagement from "./pages/LiteratureManagement";
+import ResearchOutput from "./pages/ResearchOutput";
+import ToolLibrary from "./pages/ToolLibrary";
+import Guidelines from "./pages/Guidelines";
+import News from "./pages/News";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Layout from "./components/Layout";
 
 const queryClient = new QueryClient();
 
@@ -15,8 +25,18 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/login" element={<Login />} />
+          
+          <Route element={<Layout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/reports" element={<ReportHub />} />
+            <Route path="/literature" element={<LiteratureManagement />} />
+            <Route path="/research" element={<ResearchOutput />} />
+            <Route path="/tools" element={<ToolLibrary />} />
+            <Route path="/guidelines" element={<Guidelines />} />
+            <Route path="/news" element={<News />} />
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
