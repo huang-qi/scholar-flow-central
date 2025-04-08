@@ -11,6 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface TopBarProps {
   sidebarCollapsed: boolean;
@@ -18,6 +21,15 @@ interface TopBarProps {
 }
 
 export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const navigate = useNavigate();
+  
+  const notifications = [
+    { id: 1, title: "New research paper published", time: "Just now" },
+    { id: 2, title: "Report submission reminder", time: "2 hours ago" },
+    { id: 3, title: "Literature review due", time: "Yesterday" },
+  ];
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
       <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="lg:hidden">
@@ -38,10 +50,33 @@ export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
           />
         </form>
 
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
-        </Button>
+        <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex justify-between items-center">
+                <h2 className="text-base font-semibold">Notifications</h2>
+                <Button variant="ghost" size="sm" className="text-xs">Mark all as read</Button>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {notifications.map((notification) => (
+              <DropdownMenuItem key={notification.id} className="flex flex-col items-start py-2">
+                <div className="text-sm font-medium">{notification.title}</div>
+                <div className="text-xs text-muted-foreground">{notification.time}</div>
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="justify-center font-medium">
+              View all notifications
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -55,10 +90,10 @@ export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/profile')}>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings')}>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/login')}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

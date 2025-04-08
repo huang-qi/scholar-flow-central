@@ -18,6 +18,10 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
+import AddReport from "./pages/AddReport";
+import AddLiterature from "./pages/AddLiterature";
+import AddResearchOutput from "./pages/AddResearchOutput";
+import AddGuideline from "./pages/AddGuideline";
 
 const queryClient = new QueryClient();
 
@@ -35,10 +39,14 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/reports" element={<ReportHub />} />
+              <Route path="/add-report" element={<AddReport />} />
               <Route path="/literature" element={<LiteratureManagement />} />
+              <Route path="/add-literature" element={<AddLiterature />} />
               <Route path="/research" element={<ResearchOutput />} />
+              <Route path="/add-output" element={<AddResearchOutput />} />
               <Route path="/tools" element={<ToolLibrary />} />
               <Route path="/guidelines" element={<Guidelines />} />
+              <Route path="/add-guideline" element={<AddGuideline />} />
               <Route path="/news" element={<News />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
