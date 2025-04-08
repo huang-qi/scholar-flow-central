@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from "react";
+import { StrictMode } from "react";
 
 import Dashboard from "./pages/Dashboard";
 import ReportHub from "./pages/ReportHub";
@@ -23,40 +23,43 @@ import AddLiterature from "./pages/AddLiterature";
 import AddResearchOutput from "./pages/AddResearchOutput";
 import AddGuideline from "./pages/AddGuideline";
 
+// Create a client
 const queryClient = new QueryClient();
 
-const App = () => (
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            
-            <Route element={<Layout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/reports" element={<ReportHub />} />
-              <Route path="/add-report" element={<AddReport />} />
-              <Route path="/literature" element={<LiteratureManagement />} />
-              <Route path="/add-literature" element={<AddLiterature />} />
-              <Route path="/research" element={<ResearchOutput />} />
-              <Route path="/add-output" element={<AddResearchOutput />} />
-              <Route path="/tools" element={<ToolLibrary />} />
-              <Route path="/guidelines" element={<Guidelines />} />
-              <Route path="/add-guideline" element={<AddGuideline />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/settings" element={<Settings />} />
-            </Route>
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
-);
+const App = () => {
+  return (
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              
+              <Route element={<Layout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/reports" element={<ReportHub />} />
+                <Route path="/add-report" element={<AddReport />} />
+                <Route path="/literature" element={<LiteratureManagement />} />
+                <Route path="/add-literature" element={<AddLiterature />} />
+                <Route path="/research" element={<ResearchOutput />} />
+                <Route path="/add-output" element={<AddResearchOutput />} />
+                <Route path="/tools" element={<ToolLibrary />} />
+                <Route path="/guidelines" element={<Guidelines />} />
+                <Route path="/add-guideline" element={<AddGuideline />} />
+                <Route path="/news" element={<News />} />
+                <Route path="/settings" element={<Settings />} />
+              </Route>
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+};
 
 export default App;
