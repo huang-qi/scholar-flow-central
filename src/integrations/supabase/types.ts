@@ -9,7 +9,159 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      guidelines: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          is_mandatory: boolean
+          title: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          id?: string
+          is_mandatory?: boolean
+          title: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_mandatory?: boolean
+          title?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          author: string
+          comments: number
+          content: string | null
+          created_at: string
+          date: string
+          id: string
+          keywords: string[]
+          title: string
+          type: string
+          views: number
+        }
+        Insert: {
+          author: string
+          comments?: number
+          content?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          keywords?: string[]
+          title: string
+          type: string
+          views?: number
+        }
+        Update: {
+          author?: string
+          comments?: number
+          content?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          keywords?: string[]
+          title?: string
+          type?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      research_outputs: {
+        Row: {
+          authors: string[]
+          citations: number | null
+          created_at: string
+          id: string
+          link: string | null
+          tags: string[]
+          title: string
+          type: string
+          venue: string | null
+          year: number
+        }
+        Insert: {
+          authors: string[]
+          citations?: number | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          tags?: string[]
+          title: string
+          type: string
+          venue?: string | null
+          year: number
+        }
+        Update: {
+          authors?: string[]
+          citations?: number | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          tags?: string[]
+          title?: string
+          type?: string
+          venue?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
+      tools: {
+        Row: {
+          author: string
+          created_at: string
+          description: string
+          has_documentation: boolean
+          id: string
+          last_updated: string | null
+          name: string
+          stars: number
+          tags: string[]
+          type: string
+          views: number
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          description: string
+          has_documentation?: boolean
+          id?: string
+          last_updated?: string | null
+          name: string
+          stars?: number
+          tags?: string[]
+          type: string
+          views?: number
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          description?: string
+          has_documentation?: boolean
+          id?: string
+          last_updated?: string | null
+          name?: string
+          stars?: number
+          tags?: string[]
+          type?: string
+          views?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
