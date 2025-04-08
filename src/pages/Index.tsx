@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ArrowRight, Info } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <Card className="w-full max-w-3xl shadow-lg border-2 border-primary/10">
@@ -49,11 +52,20 @@ const Index = () => {
         </CardContent>
         
         <CardFooter className="flex justify-center gap-4">
-          <Button variant="default" size="lg" className="gap-2">
+          <Button 
+            variant="default" 
+            size="lg" 
+            className="gap-2"
+            onClick={() => navigate('/dashboard')}
+          >
             Go to Dashboard
             <ArrowRight className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="lg">
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={() => navigate('/research')}
+          >
             Learn More
           </Button>
         </CardFooter>
