@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -45,46 +46,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
     }
     
-    // Then try to load from the database
-    fetchProfile();
+    // No longer try to load from the database since profiles table doesn't exist
+    setIsProfileLoading(false);
   }, []);
-
-  const fetchProfile = async () => {
-    try {
-      setIsProfileLoading(true);
-      
-      // In a real app, this would get the user's profile from Supabase
-      // For now, we'll simulate this with localStorage
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .limit(1)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-
-      if (data) {
-        const profile: UserProfile = {
-          name: data.full_name || defaultProfile.name,
-          email: data.email || defaultProfile.email,
-          title: data.title || defaultProfile.title, 
-          department: data.department || defaultProfile.department,
-          bio: data.bio || defaultProfile.bio,
-          avatar: data.avatar_url || defaultProfile.avatar
-        };
-        
-        setUserProfile(profile);
-        localStorage.setItem('userProfile', JSON.stringify(profile));
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-      // Keep using the default or locally stored profile
-    } finally {
-      setIsProfileLoading(false);
-    }
-  };
 
   const updateUserProfile = async (profileUpdate: Partial<UserProfile>) => {
     try {
@@ -92,24 +56,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const updatedProfile = { ...userProfile, ...profileUpdate };
       setUserProfile(updatedProfile);
       localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
-      
-      // In a real app with authentication:
-      /* 
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: updatedProfile.name,
-          email: updatedProfile.email,
-          title: updatedProfile.title,
-          department: updatedProfile.department,
-          bio: updatedProfile.bio,
-          avatar_url: updatedProfile.avatar,
-          updated_at: new Date()
-        })
-        .eq('id', user.id);
-        
-      if (error) throw error;
-      */
       
       toast({
         title: "Profile updated",

@@ -1,9 +1,9 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ToolCard } from "@/components/tools/ToolCard";
-import { ToolsEmptyState } from "@/components/tools/ToolsEmptyState";
-import { ToolsFilters } from "@/components/tools/ToolsFilters";
+import ToolCard from "@/components/tools/ToolCard";
+import ToolsEmptyState from "@/components/tools/ToolsEmptyState";
+import ToolsFilters from "@/components/tools/ToolsFilters";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
