@@ -1,16 +1,20 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, User } from "lucide-react";
+import { Camera, User, X, Plus } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
+import { Badge } from "@/components/ui/badge";
 
 export function ProfileSection() {
-  const { userProfile, updateUserProfile, isProfileLoading } = useAppContext();
+  const { userProfile, updateUserProfile, uploadAvatar, isProfileLoading } = useAppContext();
   const [profile, setProfile] = useState({ ...userProfile });
+  const [isUploading, setIsUploading] = useState(false);
+  const [newTag, setNewTag] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -19,6 +23,55 @@ export function ProfileSection() {
 
   const handleSave = async () => {
     await updateUserProfile(profile);
+  };
+
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      setIsUploading(true);
+      await uploadAvatar(file);
+      // Avatar URL is already updated in the context through uploadAvatar
+    } catch (error) {
+      console.error("Avatar upload failed:", error);
+    } finally {
+      setIsUploading(false);
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const addTag = () => {
+    if (newTag.trim() && !profile.tags.includes(newTag.trim())) {
+      setProfile(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag("");
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setProfile(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
   };
 
   if (isProfileLoading) {
@@ -53,16 +106,27 @@ export function ProfileSection() {
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             <div className="relative group">
-              <Avatar className="h-24 w-24">
+              <input 
+                type="file" 
+                ref={fileInputRef}
+                className="hidden" 
+                accept="image/*" 
+                onChange={handleFileChange}
+              />
+              <Avatar className="h-24 w-24 cursor-pointer" onClick={handleAvatarClick}>
                 <AvatarImage src={profile.avatar} />
                 <AvatarFallback>
                   <User className="h-12 w-12" />
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button variant="ghost" size="icon" className="text-white">
-                  <Camera className="h-5 w-5" />
-                </Button>
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={handleAvatarClick}>
+                {isUploading ? (
+                  <div className="text-white text-xs">Uploading...</div>
+                ) : (
+                  <Button variant="ghost" size="icon" className="text-white">
+                    <Camera className="h-5 w-5" />
+                  </Button>
+                )}
               </div>
             </div>
             <div className="space-y-4 flex-1">
@@ -117,6 +181,34 @@ export function ProfileSection() {
                   value={profile.bio} 
                   onChange={handleChange}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label>Research Interests & Skills</Label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {profile.tags.map(tag => (
+                    <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                      {tag}
+                      <button 
+                        type="button" 
+                        onClick={() => removeTag(tag)} 
+                        className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add a tag..."
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <Button type="button" size="icon" onClick={addTag}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

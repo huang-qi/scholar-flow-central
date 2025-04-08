@@ -75,6 +75,10 @@ const Dashboard = () => {
     ],
   };
 
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('');
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -100,14 +104,15 @@ const Dashboard = () => {
             <div className="flex items-center space-x-4">
               <Avatar className="h-16 w-16">
                 <AvatarImage src={userProfile.avatar} />
-                <AvatarFallback>{userProfile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                <AvatarFallback>{getInitials(userProfile.name)}</AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="font-medium">{userProfile.name}</h3>
                 <p className="text-sm text-muted-foreground">{userProfile.title}</p>
-                <div className="flex gap-2 mt-1">
-                  <Badge variant="secondary">NLP</Badge>
-                  <Badge variant="secondary">Computer Vision</Badge>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {userProfile.tags && userProfile.tags.map(tag => (
+                    <Badge key={tag} variant="secondary">{tag}</Badge>
+                  ))}
                 </div>
               </div>
             </div>

@@ -10,11 +10,13 @@ interface UserProfile {
   department: string;
   bio: string;
   avatar: string;
+  tags: string[];
 }
 
 interface AppContextType {
   userProfile: UserProfile;
   updateUserProfile: (profile: Partial<UserProfile>) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<string>;
   isProfileLoading: boolean;
 }
 
@@ -25,7 +27,8 @@ const defaultProfile: UserProfile = {
   title: "Researcher",
   department: "Research",
   bio: "",
-  avatar: "/placeholder.svg"
+  avatar: "/placeholder.svg",
+  tags: ["NLP", "Computer Vision"]
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -40,7 +43,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const storedProfile = localStorage.getItem('userProfile');
     if (storedProfile) {
       try {
-        setUserProfile(JSON.parse(storedProfile));
+        setUserProfile({
+          ...defaultProfile,
+          ...JSON.parse(storedProfile)
+        });
       } catch (e) {
         console.error("Failed to parse stored profile", e);
       }
@@ -74,10 +80,32 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const uploadAvatar = async (file: File): Promise<string> => {
+    try {
+      // In a real app with Supabase storage, we'd upload to Supabase here
+      // For now, let's create a local blob URL
+      const blobUrl = URL.createObjectURL(file);
+      
+      // Update the profile with the new avatar URL
+      await updateUserProfile({ avatar: blobUrl });
+      
+      return blobUrl;
+    } catch (error) {
+      console.error('Avatar upload failed:', error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload avatar. Please try again.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   return (
     <AppContext.Provider value={{ 
       userProfile, 
       updateUserProfile,
+      uploadAvatar,
       isProfileLoading
     }}>
       {children}

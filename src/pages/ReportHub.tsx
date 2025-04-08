@@ -24,121 +24,107 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const reportTypes = ["Individual", "Internal Group", "Collaborative"];
-const sampleReports = [
-  {
-    id: 1,
-    title: "Weekly Progress on NLP Model Training",
-    author: "Marie Chen",
-    type: "Individual",
-    date: "2025-04-01",
-    keywords: ["NLP", "Transformer", "Training"],
-    views: 8,
-    comments: 2
-  },
-  {
-    id: 2,
-    title: "Computer Vision Object Detection Update",
-    author: "Alex Jordan",
-    type: "Individual",
-    date: "2025-03-28",
-    keywords: ["CV", "Object Detection", "YOLOv8"],
-    views: 12,
-    comments: 5
-  },
-  {
-    id: 3,
-    title: "Collaborative Research on Multimodal Learning",
-    author: "Research Team",
-    type: "Collaborative",
-    date: "2025-03-24",
-    keywords: ["Multimodal", "Collaboration", "Vision-Language"],
-    views: 24,
-    comments: 8
-  },
-  {
-    id: 4,
-    title: "Monthly Progress Report: AI Ethics Committee",
-    author: "Ethics Working Group",
-    type: "Internal Group",
-    date: "2025-03-15",
-    keywords: ["Ethics", "Governance", "Fairness"],
-    views: 18,
-    comments: 10
-  },
-  {
-    id: 5,
-    title: "Weekly Update on Reinforcement Learning Project",
-    author: "David Bennett",
-    type: "Individual",
-    date: "2025-03-12",
-    keywords: ["RL", "Policy Gradient", "Simulation"],
-    views: 6,
-    comments: 1
-  }
-];
 
-const ReportItem = ({ report }: { report: typeof sampleReports[0] }) => (
-  <Card className="card-hover">
-    <CardHeader className="pb-3">
-      <div className="flex justify-between items-start">
-        <CardTitle className="text-lg">{report.title}</CardTitle>
-        <Badge variant={
-          report.type === "Individual" ? "outline" : 
-          report.type === "Internal Group" ? "secondary" : "default"
-        }>{report.type}</Badge>
-      </div>
-      <CardDescription className="flex items-center gap-2">
-        <span>{report.author}</span>
-        <span>•</span>
-        <span>{new Date(report.date).toLocaleDateString()}</span>
-      </CardDescription>
-    </CardHeader>
-    <CardContent className="pb-2">
-      <div className="flex flex-wrap gap-2 mb-3">
-        {report.keywords.map(keyword => (
-          <Badge key={keyword} variant="secondary" className="text-xs">
-            {keyword}
-          </Badge>
-        ))}
-      </div>
-    </CardContent>
-    <CardFooter className="flex justify-between pt-0">
-      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <Eye className="h-4 w-4" />
-          <span>{report.views}</span>
+const ReportItem = ({ report }: { report: any }) => {
+  const navigate = useNavigate();
+  
+  return (
+    <Card className="card-hover">
+      <CardHeader className="pb-3">
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-lg">{report.title}</CardTitle>
+          <Badge variant={
+            report.type === "Individual" ? "outline" : 
+            report.type === "Internal Group" ? "secondary" : "default"
+          }>{report.type}</Badge>
         </div>
-        <div className="flex items-center gap-1">
-          <MessageSquare className="h-4 w-4" />
-          <span>{report.comments}</span>
+        <CardDescription className="flex items-center gap-2">
+          <span>{report.author}</span>
+          <span>•</span>
+          <span>{new Date(report.date).toLocaleDateString()}</span>
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pb-2">
+        <div className="flex flex-wrap gap-2 mb-3">
+          {report.keywords && report.keywords.map((keyword: string) => (
+            <Badge key={keyword} variant="secondary" className="text-xs">
+              {keyword}
+            </Badge>
+          ))}
         </div>
-      </div>
-      <div className="flex gap-2">
-        <Button size="sm" variant="ghost">
-          <Download className="h-4 w-4 mr-1" />
-          Download
-        </Button>
-        <Button size="sm">
-          <Eye className="h-4 w-4 mr-1" />
-          View
-        </Button>
-      </div>
-    </CardFooter>
-  </Card>
-);
+      </CardContent>
+      <CardFooter className="flex justify-between pt-0">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Eye className="h-4 w-4" />
+            <span>{report.views || 0}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <MessageSquare className="h-4 w-4" />
+            <span>{report.comments || 0}</span>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="ghost">
+            <Download className="h-4 w-4 mr-1" />
+            Download
+          </Button>
+          <Button size="sm">
+            <Eye className="h-4 w-4 mr-1" />
+            View
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+};
 
 const ReportHub = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [reports, setReports] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const filteredReports = sampleReports.filter(report => {
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('reports')
+          .select('*');
+        
+        if (error) throw error;
+        
+        setReports(data || []);
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load reports. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, [toast]);
+
+  const filteredReports = reports.filter(report => {
     // Filter by search query
     const matchesSearch = !searchQuery || 
       report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       report.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.keywords.some(k => k.toLowerCase().includes(searchQuery.toLowerCase()));
+      (report.keywords && report.keywords.some((k: string) => k.toLowerCase().includes(searchQuery.toLowerCase())));
     
     // Filter by type
     const matchesType = !selectedType || report.type === selectedType;
@@ -150,7 +136,7 @@ const ReportHub = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Report Hub</h1>
-        <Button>
+        <Button onClick={() => navigate("/add-report")}>
           <Upload className="h-4 w-4 mr-2" />
           Upload Report
         </Button>
@@ -209,25 +195,37 @@ const ReportHub = () => {
             <TabsTrigger value="saved">Saved</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
-              {filteredReports.length > 0 ? (
-                filteredReports.map(report => (
+            {isLoading ? (
+              <div className="grid grid-cols-1 gap-4">
+                {[...Array(3)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardHeader className="space-y-2">
+                      <div className="h-4 w-2/3 bg-gray-200 rounded" />
+                      <div className="h-3 w-1/2 bg-gray-200 rounded" />
+                    </CardHeader>
+                    <CardContent className="h-12" />
+                  </Card>
+                ))}
+              </div>
+            ) : filteredReports.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4">
+                {filteredReports.map(report => (
                   <ReportItem key={report.id} report={report} />
-                ))
-              ) : (
-                <div className="text-center py-12">
-                  <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">No reports found</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Try adjusting your search or filter criteria
-                  </p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium">No reports found</h3>
+                <p className="text-sm text-muted-foreground">
+                  Try adjusting your search or filter criteria
+                </p>
+              </div>
+            )}
           </TabsContent>
           <TabsContent value="my">
             <div className="grid grid-cols-1 gap-4">
-              {sampleReports
+              {!isLoading && reports
                 .filter(report => report.author === "David Bennett")
                 .map(report => (
                   <ReportItem key={report.id} report={report} />
@@ -236,16 +234,16 @@ const ReportHub = () => {
           </TabsContent>
           <TabsContent value="recent">
             <div className="grid grid-cols-1 gap-4">
-              {/* Just showing a couple of sample items for recently viewed */}
-              {sampleReports.slice(0, 2).map(report => (
+              {!isLoading && reports.slice(0, 2).map(report => (
                 <ReportItem key={report.id} report={report} />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="saved">
             <div className="grid grid-cols-1 gap-4">
-              {/* Just showing a saved item */}
-              <ReportItem report={sampleReports[2]} />
+              {!isLoading && reports.length > 0 && (
+                <ReportItem report={reports[0]} />
+              )}
             </div>
           </TabsContent>
         </Tabs>
