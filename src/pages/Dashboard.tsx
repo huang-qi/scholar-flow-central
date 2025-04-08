@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BarChart } from "@/components/charts/BarChart";
+import { useAppContext } from "@/context/AppContext";
 
 const ActivityHeatmap = () => {
   const generateActivityData = () => {
@@ -62,6 +63,7 @@ const ActivityHeatmap = () => {
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const { userProfile, isProfileLoading } = useAppContext();
 
   const contributionData = {
     categories: ["Reports", "Literature", "Research", "Tools", "Comments"],
@@ -83,7 +85,9 @@ const Dashboard = () => {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>
-              <CardTitle className="text-xl">Welcome, Dr. Bennett</CardTitle>
+              <CardTitle className="text-xl">
+                {isProfileLoading ? "Loading..." : `Welcome, ${userProfile.name.split(' ')[0]}`}
+              </CardTitle>
               <CardDescription>
                 Here's what's happening in your research group
               </CardDescription>
@@ -95,12 +99,12 @@ const Dashboard = () => {
           <CardContent className="space-y-6">
             <div className="flex items-center space-x-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>DB</AvatarFallback>
+                <AvatarImage src={userProfile.avatar} />
+                <AvatarFallback>{userProfile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-medium">Dr. David Bennett</h3>
-                <p className="text-sm text-muted-foreground">Associate Professor of AI Research</p>
+                <h3 className="font-medium">{userProfile.name}</h3>
+                <p className="text-sm text-muted-foreground">{userProfile.title}</p>
                 <div className="flex gap-2 mt-1">
                   <Badge variant="secondary">NLP</Badge>
                   <Badge variant="secondary">Computer Vision</Badge>

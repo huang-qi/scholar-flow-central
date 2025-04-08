@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { StrictMode } from "react";
+import { AppProvider } from "./context/AppContext";
 
 import Dashboard from "./pages/Dashboard";
 import ReportHub from "./pages/ReportHub";
@@ -22,6 +23,7 @@ import AddReport from "./pages/AddReport";
 import AddLiterature from "./pages/AddLiterature";
 import AddResearchOutput from "./pages/AddResearchOutput";
 import AddGuideline from "./pages/AddGuideline";
+import AddTool from "./pages/AddTool";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -30,33 +32,36 @@ const App = () => {
   return (
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              
-              <Route element={<Layout />}>
-                <Route path="/" element={<Index />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/reports" element={<ReportHub />} />
-                <Route path="/add-report" element={<AddReport />} />
-                <Route path="/literature" element={<LiteratureManagement />} />
-                <Route path="/add-literature" element={<AddLiterature />} />
-                <Route path="/research" element={<ResearchOutput />} />
-                <Route path="/add-output" element={<AddResearchOutput />} />
-                <Route path="/tools" element={<ToolLibrary />} />
-                <Route path="/guidelines" element={<Guidelines />} />
-                <Route path="/add-guideline" element={<AddGuideline />} />
-                <Route path="/news" element={<News />} />
-                <Route path="/settings" element={<Settings />} />
-              </Route>
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <AppProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                
+                <Route element={<Layout />}>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/reports" element={<ReportHub />} />
+                  <Route path="/add-report" element={<AddReport />} />
+                  <Route path="/literature" element={<LiteratureManagement />} />
+                  <Route path="/add-literature" element={<AddLiterature />} />
+                  <Route path="/research" element={<ResearchOutput />} />
+                  <Route path="/add-output" element={<AddResearchOutput />} />
+                  <Route path="/tools" element={<ToolLibrary />} />
+                  <Route path="/add-tool" element={<AddTool />} />
+                  <Route path="/guidelines" element={<Guidelines />} />
+                  <Route path="/add-guideline" element={<AddGuideline />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AppProvider>
       </QueryClientProvider>
     </StrictMode>
   );

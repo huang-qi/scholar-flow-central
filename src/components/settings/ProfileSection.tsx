@@ -6,31 +6,40 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, User } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useAppContext } from "@/context/AppContext";
 
 export function ProfileSection() {
-  const { toast } = useToast();
-  const [profile, setProfile] = useState({
-    name: "Daniel Brown",
-    email: "daniel.brown@example.com",
-    title: "Research Scientist",
-    department: "Computational Biology",
-    bio: "Specialized in computational methods for genomic analysis with over 8 years of experience in academic research.",
-    avatar: "/placeholder.svg"
-  });
+  const { userProfile, updateUserProfile, isProfileLoading } = useAppContext();
+  const [profile, setProfile] = useState({ ...userProfile });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    // In a real app, this would save to backend
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been updated successfully.",
-    });
+  const handleSave = async () => {
+    await updateUserProfile(profile);
   };
+
+  if (isProfileLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center">
+              <div className="h-32 w-32 rounded-full bg-gray-100 animate-pulse" />
+            </div>
+            <div className="mt-6 space-y-4">
+              <div className="h-8 w-full rounded bg-gray-100 animate-pulse" />
+              <div className="h-8 w-full rounded bg-gray-100 animate-pulse" />
+              <div className="h-8 w-full rounded bg-gray-100 animate-pulse" />
+              <div className="h-32 w-full rounded bg-gray-100 animate-pulse" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
