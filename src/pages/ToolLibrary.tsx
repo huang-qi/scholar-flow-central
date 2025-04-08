@@ -1,166 +1,253 @@
-
-import React, { useState } from 'react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Star, Download, Wrench, Star as StarIcon } from 'lucide-react';
+import { 
+  Search, Wrench, Star, Upload, ExternalLink, 
+  Download, Play, Eye, HeartIcon
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-// Example AI tools data
-const aiTools = [
+interface AITool {
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  tags: string[];
+  author: string;
+  lastUpdated: string;
+  stars: number;
+  views: number;
+  hasDocumentation: boolean;
+}
+
+const sampleTools: AITool[] = [
   {
     id: 1,
-    name: "Image Segmentation Tool",
-    description: "Automated segmentation of medical images using deep learning.",
-    category: "medical",
-    rating: 4.8,
-    downloads: 245,
-    tags: ["medical imaging", "segmentation", "deep learning"]
+    name: "Image Segmentation API",
+    description: "A pre-trained API for quick and accurate image segmentation tasks",
+    type: "API",
+    tags: ["Computer Vision", "Segmentation", "Deep Learning"],
+    author: "Marie Chen",
+    lastUpdated: "2025-03-15",
+    stars: 28,
+    views: 124,
+    hasDocumentation: true
   },
   {
     id: 2,
-    name: "Data Augmentation Pipeline",
-    description: "Generate synthetic data to improve model training with diverse samples.",
-    category: "data",
-    rating: 4.5,
-    downloads: 320,
-    tags: ["data augmentation", "synthetic data", "training"]
+    name: "NLP Preprocessing Toolkit",
+    description: "A comprehensive toolkit for NLP data preprocessing",
+    type: "Python Package",
+    tags: ["NLP", "Preprocessing", "Text"],
+    author: "Alex Jordan",
+    lastUpdated: "2025-02-20",
+    stars: 42,
+    views: 256,
+    hasDocumentation: true
   },
   {
     id: 3,
-    name: "Model Explainability Dashboard",
-    description: "Visualize and understand your model's decision making process.",
-    category: "visualization",
-    rating: 4.6,
-    downloads: 187,
-    tags: ["interpretability", "visualization", "XAI"]
+    name: "Automated Data Augmentation",
+    description: "Tool to automatically generate and apply data augmentation strategies",
+    type: "Python Script",
+    tags: ["Data Augmentation", "ML", "Optimization"],
+    author: "Robin Taylor",
+    lastUpdated: "2025-03-28",
+    stars: 15,
+    views: 89,
+    hasDocumentation: false
   },
   {
     id: 4,
-    name: "Hyperparameter Optimization",
-    description: "Automated tuning of model hyperparameters using Bayesian optimization.",
-    category: "training",
-    rating: 4.7,
-    downloads: 278,
-    tags: ["hyperparameters", "optimization", "training"]
+    name: "Model Explainability Dashboard",
+    description: "Interactive dashboard for visualizing and understanding ML model decisions",
+    type: "Web App",
+    tags: ["Explainability", "Visualization", "Dashboard"],
+    author: "David Bennett",
+    lastUpdated: "2025-04-02",
+    stars: 36,
+    views: 145,
+    hasDocumentation: true
   },
   {
     id: 5,
-    name: "Natural Language Processing Pipeline",
-    description: "End-to-end pipeline for text processing, analysis and modeling.",
-    category: "nlp",
-    rating: 4.4,
-    downloads: 310,
-    tags: ["NLP", "text analysis", "language models"]
+    name: "Hyperparameter Optimization Service",
+    description: "Automated hyperparameter tuning for machine learning models",
+    type: "Service",
+    tags: ["Optimization", "Hyperparameter", "AutoML"],
+    author: "Marie Chen",
+    lastUpdated: "2025-01-10",
+    stars: 21,
+    views: 102,
+    hasDocumentation: true
   }
 ];
 
-const ToolLibrary = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
-  
-  // Get unique categories for tabs
-  const categories = ["all", ...Array.from(new Set(aiTools.map(tool => tool.category)))];
-  
-  // Filter tools based on search term and active category
-  const filteredTools = aiTools.filter(tool => {
-    const matchesSearch = tool.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tool.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCategory = activeTab === "all" ? true : tool.category === activeTab;
-    
-    return matchesSearch && matchesCategory;
-  });
-  
+const ToolCard = ({ tool }: { tool: AITool }) => {
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">AI Tool Library</h1>
-          <p className="text-muted-foreground">Access and manage AI tools developed by the research group</p>
-        </div>
-        <Button>Upload New Tool</Button>
-      </div>
-      
-      <div className="mb-6">
-        <Input 
-          placeholder="Search tools by name, description or tags..." 
-          className="max-w-lg"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-      
-      <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="mb-4">
-          {categories.map(category => (
-            <TabsTrigger key={category} value={category} className="capitalize">
-              {category}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        
-        <TabsContent value={activeTab}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTools.length === 0 ? (
-              <div className="col-span-full text-center py-8 text-muted-foreground">
-                No tools found matching your criteria.
-              </div>
-            ) : (
-              filteredTools.map(tool => (
-                <Card key={tool.id}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle>{tool.name}</CardTitle>
-                        <CardDescription className="mt-1 capitalize">
-                          {tool.category}
-                        </CardDescription>
-                      </div>
-                      <div className="bg-primary/10 rounded-full p-2">
-                        <Wrench className="h-5 w-5 text-primary" />
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">{tool.description}</p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {tool.tags.map((tag, idx) => (
-                        <Badge key={idx} variant="outline">{tag}</Badge>
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <StarIcon className="h-4 w-4 text-amber-500 fill-amber-500" />
-                        <span>{tool.rating}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Download className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">{tool.downloads}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">Details</Button>
-                      <Button size="sm" className="flex-1">Download</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+    <Card className="card-hover">
+      <CardHeader>
+        <div className="flex justify-between">
+          <div>
+            <CardTitle className="text-lg">{tool.name}</CardTitle>
+            <CardDescription className="text-sm">{tool.type} by {tool.author}</CardDescription>
           </div>
-        </TabsContent>
-      </Tabs>
+          <Badge variant="outline">{tool.views} views</Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm leading-relaxed mb-4">{tool.description}</p>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {tool.tags.map(tag => (
+            <Badge key={tag} variant="secondary" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div>Last updated: {new Date(tool.lastUpdated).toLocaleDateString()}</div>
+          <div className="flex items-center gap-1">
+            <Star className="h-4 w-4 text-amber-500" />
+            <span>{tool.stars}</span>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="justify-between pt-0">
+        <div className="flex items-center text-sm">
+          {tool.hasDocumentation && (
+            <div className="flex items-center gap-1 text-primary">
+              <Eye className="h-4 w-4" />
+              <span>Documentation</span>
+            </div>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline">
+            <HeartIcon className="h-4 w-4 mr-1" />
+            Favorite
+          </Button>
+          <Button size="sm">
+            <Play className="h-4 w-4 mr-1" />
+            Try It
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+};
+
+const ToolLibrary = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+
+  const toolTypes = Array.from(new Set(sampleTools.map(tool => tool.type))).sort();
+
+  const filteredTools = sampleTools.filter(tool => {
+    const matchesSearch = !searchQuery || 
+      tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tool.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesType = !selectedType || tool.type === selectedType;
+    
+    return matchesSearch && matchesType;
+  });
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight">AI Tool Library</h1>
+        <Button>
+          <Upload className="h-4 w-4 mr-2" />
+          Add Tool
+        </Button>
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input 
+              placeholder="Search tools..." 
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Select onValueChange={(value) => setSelectedType(value === "all" ? null : value)}>
+              <SelectTrigger className="w-[180px]">
+                <div className="flex items-center">
+                  <Wrench className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Tool type" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {toolTypes.map(type => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <Tabs defaultValue="all" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="all">All Tools</TabsTrigger>
+            <TabsTrigger value="favorites">Favorites</TabsTrigger>
+            <TabsTrigger value="recent">Recently Used</TabsTrigger>
+            <TabsTrigger value="my">My Tools</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all" className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              {filteredTools.length > 0 ? (
+                filteredTools.map(tool => (
+                  <ToolCard key={tool.id} tool={tool} />
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No tools found</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Try adjusting your search or filter criteria
+                  </p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="favorites">
+            <div className="grid grid-cols-1 gap-4">
+              {sampleTools.slice(1, 3).map(tool => (
+                <ToolCard key={tool.id} tool={tool} />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="recent">
+            <div className="grid grid-cols-1 gap-4">
+              {sampleTools.slice(0, 2).map(tool => (
+                <ToolCard key={tool.id} tool={tool} />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="my">
+            <div className="grid grid-cols-1 gap-4">
+              {sampleTools.filter(tool => tool.author === "David Bennett").map(tool => (
+                <ToolCard key={tool.id} tool={tool} />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
