@@ -12,6 +12,7 @@ import ResearchOutput from "./pages/ResearchOutput";
 import ToolLibrary from "./pages/ToolLibrary";
 import Guidelines from "./pages/Guidelines";
 import News from "./pages/News";
+import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/tools" element={<ToolLibrary />} />
             <Route path="/guidelines" element={<Guidelines />} />
             <Route path="/news" element={<News />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

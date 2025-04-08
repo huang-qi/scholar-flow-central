@@ -56,7 +56,7 @@ export function SideNavigation({ collapsed }: SideNavigationProps) {
         collapsed ? "w-20" : "w-64"
       )}
     >
-      <nav className="flex flex-col gap-2 p-4 text-sidebar-foreground">
+      <nav className="flex flex-col gap-2 p-4 text-sidebar-foreground h-full">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
