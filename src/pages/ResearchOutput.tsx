@@ -18,10 +18,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+type OutputType = "paper" | "code" | "patent";
+
 interface ResearchOutput {
   id: number;
   title: string;
-  type: "paper" | "code" | "patent";
+  type: OutputType;
   authors: string[];
   year: number;
   venue?: string;
@@ -103,7 +105,11 @@ const sampleOutputs: ResearchOutput[] = [
   }
 ];
 
-const OutputTypeIcon = ({ type }: { type: "paper" | "code" | "patent" }) => {
+interface OutputTypeIconProps {
+  type: OutputType;
+}
+
+const OutputTypeIcon = ({ type }: OutputTypeIconProps) => {
   switch (type) {
     case "paper":
       return <FileText className="h-5 w-5" />;
@@ -124,11 +130,7 @@ const OutputCard = ({ output }: { output: ResearchOutput }) => {
             output.type === "code" ? "bg-accent/10" : 
             "bg-amber-500/10"
           }`}>
-            <OutputTypeIcon type={output.type} className={`${
-              output.type === "paper" ? "text-primary" : 
-              output.type === "code" ? "text-accent" : 
-              "text-amber-500"
-            }`} />
+            <OutputTypeIcon type={output.type} />
           </div>
           <div>
             <CardTitle className="text-lg">{output.title}</CardTitle>

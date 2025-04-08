@@ -7,9 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// Define types for notifications
+type NotificationType = 'researchUpdates' | 'systemAnnouncements' | 'newPublications';
+type NotificationCategory = 'email' | 'push';
+
+interface NotificationsState {
+  email: Record<NotificationType, boolean>;
+  push: Record<NotificationType, boolean>;
+}
+
 export function NotificationsSection() {
   const { toast } = useToast();
-  const [notifications, setNotifications] = useState({
+  const [notifications, setNotifications] = useState<NotificationsState>({
     email: {
       researchUpdates: true,
       systemAnnouncements: true,
@@ -22,12 +31,12 @@ export function NotificationsSection() {
     }
   });
 
-  const handleToggleNotification = (category: 'email' | 'push', type: string) => {
+  const handleToggleNotification = (category: NotificationCategory, type: NotificationType) => {
     setNotifications(prev => ({
       ...prev,
       [category]: {
         ...prev[category],
-        [type]: !prev[category][type as keyof typeof prev[category]]
+        [type]: !prev[category][type]
       }
     }));
   };
