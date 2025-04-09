@@ -15,6 +15,7 @@ export interface Publication {
   tags: string[];
   rating: number;
   notes: boolean;
+  saved?: boolean; // Added this property
 }
 
 interface PublicationCardProps {
