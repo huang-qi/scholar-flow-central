@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -30,55 +29,55 @@ const LiteratureManagement = () => {
   const fetchPublications = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('literature')
-        .select('*');
       
-      if (error && error.code !== '42P01') { // 42P01 is "table doesn't exist"
-        throw error;
+      // Check local storage first
+      const storedPublications = localStorage.getItem('literature');
+      if (storedPublications) {
+        setPublications(JSON.parse(storedPublications));
+        setIsLoading(false);
+        return;
       }
       
-      if (data && data.length > 0) {
-        setPublications(data);
-      } else {
-        // Sample data
-        const samplePublications = [
-          {
-            id: "1",
-            title: "Attention Is All You Need",
-            authors: ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar"],
-            journal: "NeurIPS",
-            year: 2017,
-            doi: "10.48550/arXiv.1706.03762",
-            tags: ["NLP", "Transformer", "Attention"],
-            rating: 5,
-            notes: true
-          },
-          {
-            id: "2",
-            title: "Deep Residual Learning for Image Recognition",
-            authors: ["Kaiming He", "Xiangyu Zhang", "Shaoqing Ren", "Jian Sun"],
-            journal: "CVPR",
-            year: 2016,
-            doi: "10.1109/CVPR.2016.90",
-            tags: ["Computer Vision", "CNN", "ResNet"],
-            rating: 5,
-            notes: true
-          },
-          {
-            id: "3",
-            title: "Language Models are Few-Shot Learners",
-            authors: ["Tom B. Brown", "Benjamin Mann", "Nick Ryder"],
-            journal: "NeurIPS",
-            year: 2020,
-            doi: "10.48550/arXiv.2005.14165",
-            tags: ["NLP", "GPT", "Few-shot Learning"],
-            rating: 4,
-            notes: false
-          }
-        ];
-        setPublications(samplePublications);
-      }
+      // If no local storage data, use sample data
+      const samplePublications = [
+        {
+          id: "1",
+          title: "Attention Is All You Need",
+          authors: ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar"],
+          journal: "NeurIPS",
+          year: 2017,
+          doi: "10.48550/arXiv.1706.03762",
+          tags: ["NLP", "Transformer", "Attention"],
+          rating: 5,
+          notes: true
+        },
+        {
+          id: "2",
+          title: "Deep Residual Learning for Image Recognition",
+          authors: ["Kaiming He", "Xiangyu Zhang", "Shaoqing Ren", "Jian Sun"],
+          journal: "CVPR",
+          year: 2016,
+          doi: "10.1109/CVPR.2016.90",
+          tags: ["Computer Vision", "CNN", "ResNet"],
+          rating: 5,
+          notes: true
+        },
+        {
+          id: "3",
+          title: "Language Models are Few-Shot Learners",
+          authors: ["Tom B. Brown", "Benjamin Mann", "Nick Ryder"],
+          journal: "NeurIPS",
+          year: 2020,
+          doi: "10.48550/arXiv.2005.14165",
+          tags: ["NLP", "GPT", "Few-shot Learning"],
+          rating: 4,
+          notes: false
+        }
+      ];
+      setPublications(samplePublications);
+      
+      // Save to localStorage for future use
+      localStorage.setItem('literature', JSON.stringify(samplePublications));
     } catch (error) {
       console.error('Error fetching literature:', error);
       toast({
@@ -95,8 +94,10 @@ const LiteratureManagement = () => {
     fetchPublications();
   }, []);
 
-  const handlePublicationDeleted = () => {
-    fetchPublications();
+  const handlePublicationDeleted = (id: string) => {
+    const updatedPublications = publications.filter(pub => pub.id !== id);
+    setPublications(updatedPublications);
+    localStorage.setItem('literature', JSON.stringify(updatedPublications));
   };
 
   // Get unique tags from all publications
@@ -197,7 +198,7 @@ const LiteratureManagement = () => {
                   <PublicationCard 
                     key={pub.id} 
                     publication={pub}
-                    onDelete={handlePublicationDeleted}
+                    onDelete={() => handlePublicationDeleted(pub.id)}
                   />
                 ))
               ) : (
@@ -213,12 +214,11 @@ const LiteratureManagement = () => {
           </TabsContent>
           <TabsContent value="recent">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Just showing a couple of recent items */}
               {!isLoading && publications.slice(0, 4).map(pub => (
                 <PublicationCard 
                   key={pub.id} 
                   publication={pub}
-                  onDelete={handlePublicationDeleted}
+                  onDelete={() => handlePublicationDeleted(pub.id)}
                 />
               ))}
             </div>
@@ -229,19 +229,18 @@ const LiteratureManagement = () => {
                 <PublicationCard 
                   key={pub.id} 
                   publication={pub}
-                  onDelete={handlePublicationDeleted}
+                  onDelete={() => handlePublicationDeleted(pub.id)}
                 />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="favorites">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Just showing items with high ratings */}
               {!isLoading && publications.filter(pub => pub.rating === 5).map(pub => (
                 <PublicationCard 
                   key={pub.id} 
                   publication={pub}
-                  onDelete={handlePublicationDeleted}
+                  onDelete={() => handlePublicationDeleted(pub.id)}
                 />
               ))}
             </div>

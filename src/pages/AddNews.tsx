@@ -73,19 +73,14 @@ const AddNews = () => {
         saved: false,
       };
 
-      // Try to insert into the news table
-      try {
-        const { error } = await supabase
-          .from('news')
-          .insert([newsItem]);
-          
-        if (error && error.code !== '42P01') { // 42P01 is "table doesn't exist"
-          throw error;
-        }
-      } catch (error) {
-        console.error('Error inserting news item:', error);
-        // Continue execution even if database insert fails
-      }
+      // Since there's no "news" table in the database yet, let's save to localStorage
+      // In a real application, we would first create the table in Supabase
+      const existingNews = JSON.parse(localStorage.getItem('news') || '[]');
+      const newNewsItem = {
+        ...newsItem,
+        id: crypto.randomUUID()
+      };
+      localStorage.setItem('news', JSON.stringify([...existingNews, newNewsItem]));
 
       toast({
         title: "News item created",

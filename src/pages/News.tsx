@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import NewsCard from "@/components/news/NewsCard";
 import { useNavigate } from "react-router-dom";
@@ -29,55 +28,61 @@ const News = () => {
   const fetchNews = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('news')
-        .select('*');
       
-      if (error && error.code !== '42P01') {
-        throw error;
+      // Check localStorage first
+      const storedNews = localStorage.getItem('news');
+      if (storedNews) {
+        const parsedNews = JSON.parse(storedNews);
+        setNews(parsedNews);
+        setSavedNews(new Set(parsedNews.filter((n: any) => n.saved).map((n: any) => n.id)));
+        setIsLoading(false);
+        return;
       }
       
-      if (data) {
-        setNews(data);
-        setSavedNews(new Set(data.filter((n: any) => n.saved).map((n: any) => n.id)));
-      } else {
-        const sampleNews = [
-          {
-            id: '1',
-            title: "New Research Grant Approved",
-            content: "Our research group has been awarded a $1.5M grant for the project 'Advanced ML Techniques for Healthcare Applications'. This grant will fund our research for the next 3 years.",
-            author: "Dr. David Bennett",
-            authorRole: "Principal Investigator",
-            date: "2025-04-05",
-            type: "announcement",
-            important: true,
-            read: true,
-          },
-          {
-            id: '2',
-            title: "Weekly Meeting Change",
-            content: "Starting next week, our regular group meetings will be moved to Thursdays at 2:00 PM instead of Fridays. This change accommodates the new semester schedule.",
-            author: "Marie Chen",
-            authorRole: "Research Coordinator",
-            date: "2025-04-04",
-            type: "update",
-            important: true,
-          },
-          {
-            id: '3',
-            title: "Paper Accepted at NeurIPS 2025",
-            content: "Our paper 'Self-Supervised Learning in Dynamic Systems' has been accepted for presentation at NeurIPS 2025. Congratulations to all authors!",
-            author: "Alex Jordan",
-            authorRole: "Senior Researcher",
-            date: "2025-04-02",
-            type: "achievement",
-            read: true,
-            saved: true,
-          }
-        ];
-        setNews(sampleNews);
-        setSavedNews(new Set(sampleNews.filter(n => n.saved).map(n => n.id)));
-      }
+      // If no local storage, use sample data
+      const sampleNews = [
+        {
+          id: '1',
+          title: "New Research Grant Approved",
+          content: "Our research group has been awarded a $1.5M grant for the project 'Advanced ML Techniques for Healthcare Applications'. This grant will fund our research for the next 3 years.",
+          author: "Dr. David Bennett",
+          authorRole: "Principal Investigator",
+          date: "2025-04-05",
+          type: "announcement",
+          important: true,
+          read: true,
+          saved: true
+        },
+        {
+          id: '2',
+          title: "Weekly Meeting Change",
+          content: "Starting next week, our regular group meetings will be moved to Thursdays at 2:00 PM instead of Fridays. This change accommodates the new semester schedule.",
+          author: "Marie Chen",
+          authorRole: "Research Coordinator",
+          date: "2025-04-04",
+          type: "update",
+          important: true,
+          read: false,
+          saved: false
+        },
+        {
+          id: '3',
+          title: "Paper Accepted at NeurIPS 2025",
+          content: "Our paper 'Self-Supervised Learning in Dynamic Systems' has been accepted for presentation at NeurIPS 2025. Congratulations to all authors!",
+          author: "Alex Jordan",
+          authorRole: "Senior Researcher",
+          date: "2025-04-02",
+          type: "achievement",
+          read: true,
+          saved: true,
+        }
+      ];
+      
+      setNews(sampleNews);
+      setSavedNews(new Set(sampleNews.filter(n => n.saved).map(n => n.id)));
+      
+      // Save to localStorage for future use
+      localStorage.setItem('news', JSON.stringify(sampleNews));
     } catch (error) {
       console.error('Error fetching news:', error);
       toast({
@@ -106,22 +111,29 @@ const News = () => {
     
     setSavedNews(newSavedSet);
     
-    try {
-      const { error } = await supabase
-        .from('news')
-        .update({ saved: !isSaved })
-        .eq('id', id);
-      
-      if (error && error.code !== '42P01') {
-        throw error;
+    // Update in localStorage instead of database
+    const updatedNews = news.map(item => {
+      if (item.id === id) {
+        return { ...item, saved: !isSaved };
       }
-    } catch (error) {
-      console.error('Error updating saved status:', error);
-    }
+      return item;
+    });
+    
+    setNews(updatedNews);
+    localStorage.setItem('news', JSON.stringify(updatedNews));
   };
 
-  const handleNewsDeleted = () => {
-    fetchNews();
+  const handleNewsDeleted = (id: string) => {
+    const updatedNews = news.filter(item => item.id !== id);
+    setNews(updatedNews);
+    localStorage.setItem('news', JSON.stringify(updatedNews));
+    
+    // Update saved set if needed
+    if (savedNews.has(id)) {
+      const newSavedSet = new Set(savedNews);
+      newSavedSet.delete(id);
+      setSavedNews(newSavedSet);
+    }
   };
 
   const filteredNews = news.map(item => ({
@@ -203,7 +215,7 @@ const News = () => {
                     key={item.id} 
                     news={item}
                     toggleSaved={toggleSaved}
-                    onDelete={handleNewsDeleted}
+                    onDelete={() => handleNewsDeleted(item.id)}
                   />
                 ))
               ) : (
@@ -224,7 +236,7 @@ const News = () => {
                   key={item.id} 
                   news={item}
                   toggleSaved={toggleSaved}
-                  onDelete={handleNewsDeleted}
+                  onDelete={() => handleNewsDeleted(item.id)}
                 />
               ))}
             </div>
@@ -236,7 +248,7 @@ const News = () => {
                   key={item.id} 
                   news={item}
                   toggleSaved={toggleSaved}
-                  onDelete={handleNewsDeleted}
+                  onDelete={() => handleNewsDeleted(item.id)}
                 />
               ))}
             </div>
@@ -248,7 +260,7 @@ const News = () => {
                   key={item.id} 
                   news={item}
                   toggleSaved={toggleSaved}
-                  onDelete={handleNewsDeleted}
+                  onDelete={() => handleNewsDeleted(item.id)}
                 />
               ))}
             </div>

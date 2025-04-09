@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bookmark, BookmarkCheck, Eye, Trash2 } from "lucide-react";
+import { Bookmark, BookmarkCheck, Eye } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DeleteButton from "@/components/DeleteButton";
 
@@ -23,7 +23,7 @@ export interface NewsItem {
 interface NewsCardProps {
   news: NewsItem;
   toggleSaved: (id: string) => void;
-  onDelete?: () => void;
+  onDelete?: (id: string) => void;
 }
 
 const getTypeColor = (type: string) => {
@@ -67,7 +67,7 @@ const NewsCard = ({ news, toggleSaved, onDelete }: NewsCardProps) => {
               id={news.id} 
               itemName="News Item" 
               tableName="news" 
-              onDelete={onDelete}
+              onDelete={() => onDelete && onDelete(news.id)}
             />
           </div>
         </div>
