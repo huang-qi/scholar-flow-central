@@ -37,16 +37,23 @@ const DeleteButton = ({ id, itemName, tableName, onDelete }: DeleteButtonProps) 
       if (validTables.includes(tableName)) {
         // Use Supabase to delete
         const { error } = await supabase
-          .from(tableName as any)
+          .from(tableName as "guidelines" | "reports" | "research_outputs" | "tools")
           .delete()
           .eq('id', id);
 
         if (error) throw error;
       } else {
-        // For tables that don't exist yet in the database, we'll simulate deletion
-        // This would normally be handled with local storage or a mock API
-        console.log(`Simulating deletion from ${tableName} with ID: ${id}`);
-        // Wait a small amount of time to simulate network request
+        // For tables that don't exist yet in the database, we'll handle with localStorage
+        const localStorageKey = tableName;
+        const storedItems = localStorage.getItem(localStorageKey);
+        
+        if (storedItems) {
+          const items = JSON.parse(storedItems);
+          const updatedItems = items.filter((item: any) => item.id !== id);
+          localStorage.setItem(localStorageKey, JSON.stringify(updatedItems));
+        }
+        
+        // Simulate network request
         await new Promise(resolve => setTimeout(resolve, 300));
       }
 

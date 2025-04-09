@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -96,6 +97,14 @@ const LiteratureManagement = () => {
 
   const handlePublicationDeleted = (id: string) => {
     const updatedPublications = publications.filter(pub => pub.id !== id);
+    setPublications(updatedPublications);
+    localStorage.setItem('literature', JSON.stringify(updatedPublications));
+  };
+  
+  const handleToggleSaved = (id: string) => {
+    const updatedPublications = publications.map(pub => 
+      pub.id === id ? { ...pub, saved: !pub.saved } : pub
+    );
     setPublications(updatedPublications);
     localStorage.setItem('literature', JSON.stringify(updatedPublications));
   };
@@ -198,7 +207,8 @@ const LiteratureManagement = () => {
                   <PublicationCard 
                     key={pub.id} 
                     publication={pub}
-                    onDelete={() => handlePublicationDeleted(pub.id)}
+                    onDelete={handlePublicationDeleted}
+                    onToggleSaved={handleToggleSaved}
                   />
                 ))
               ) : (
@@ -218,7 +228,8 @@ const LiteratureManagement = () => {
                 <PublicationCard 
                   key={pub.id} 
                   publication={pub}
-                  onDelete={() => handlePublicationDeleted(pub.id)}
+                  onDelete={handlePublicationDeleted}
+                  onToggleSaved={handleToggleSaved}
                 />
               ))}
             </div>
@@ -229,7 +240,8 @@ const LiteratureManagement = () => {
                 <PublicationCard 
                   key={pub.id} 
                   publication={pub}
-                  onDelete={() => handlePublicationDeleted(pub.id)}
+                  onDelete={handlePublicationDeleted}
+                  onToggleSaved={handleToggleSaved}
                 />
               ))}
             </div>
@@ -240,7 +252,8 @@ const LiteratureManagement = () => {
                 <PublicationCard 
                   key={pub.id} 
                   publication={pub}
-                  onDelete={() => handlePublicationDeleted(pub.id)}
+                  onDelete={handlePublicationDeleted}
+                  onToggleSaved={handleToggleSaved}
                 />
               ))}
             </div>

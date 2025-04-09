@@ -82,14 +82,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const uploadAvatar = async (file: File): Promise<string> => {
     try {
-      // In a real app with Supabase storage, we'd upload to Supabase here
-      // For now, let's create a local blob URL
-      const blobUrl = URL.createObjectURL(file);
-      
-      // Update the profile with the new avatar URL
-      await updateUserProfile({ avatar: blobUrl });
-      
-      return blobUrl;
+      // For improved user experience, create a proper file URL instead of a blob URL
+      // that gets lost on page refresh
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target && event.target.result) {
+            // Store the base64 string
+            const base64String = event.target.result.toString();
+            
+            // Update the profile with the new avatar URL
+            updateUserProfile({ avatar: base64String })
+              .then(() => resolve(base64String))
+              .catch(reject);
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
     } catch (error) {
       console.error('Avatar upload failed:', error);
       toast({

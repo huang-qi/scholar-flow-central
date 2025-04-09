@@ -26,29 +26,42 @@ const Guidelines = () => {
   const fetchGuidelines = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('guidelines')
-        .select('*');
+      // First check local storage for guidelines
+      const localGuidelines = localStorage.getItem('guidelines');
+      let guidelineData: any[] = [];
       
-      if (error && error.code !== '42P01') { // 42P01 is "table doesn't exist"
-        throw error;
+      if (localGuidelines) {
+        guidelineData = JSON.parse(localGuidelines);
       }
       
-      if (data && data.length > 0) {
-        // Format the data to match our component's expected format
-        const formattedGuidelines = data.map(item => ({
-          id: item.id,
-          title: item.title,
-          category: item.category,
-          version: item.version || "1.0",
-          lastUpdated: item.updated_at,
-          description: item.content,
-          fileName: `${item.title.toLowerCase().replace(/\s+/g, '_')}.pdf`
-        }));
+      // Now try to get data from Supabase
+      try {
+        const { data, error } = await supabase
+          .from('guidelines')
+          .select('*');
         
-        setGuidelines(formattedGuidelines);
-      } else {
-        // Use sample data if no data in database
+        if (data && data.length > 0) {
+          // Format the data to match our component's expected format
+          const formattedGuidelines = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            category: item.category,
+            version: item.version || "1.0",
+            lastUpdated: item.updated_at,
+            description: item.content,
+            fileName: `${item.title.toLowerCase().replace(/\s+/g, '_')}.pdf`
+          }));
+          
+          // Add Supabase guidelines to our local guidelines
+          guidelineData = [...formattedGuidelines, ...guidelineData];
+        }
+      } catch (error) {
+        console.error("Supabase fetch error:", error);
+        // Continue with local data only
+      }
+      
+      if (guidelineData.length === 0) {
+        // Use sample data if no data in database or local storage
         const sampleGuidelines = [
           {
             id: "1",
@@ -78,8 +91,15 @@ const Guidelines = () => {
             fileName: "weekly_report_template.docx"
           }
         ];
-        setGuidelines(sampleGuidelines);
+        guidelineData = sampleGuidelines;
       }
+      
+      // Remove duplicates by id
+      const uniqueGuidelines = Array.from(
+        new Map(guidelineData.map(item => [item.id, item])).values()
+      );
+      
+      setGuidelines(uniqueGuidelines);
     } catch (error) {
       console.error('Error fetching guidelines:', error);
       toast({

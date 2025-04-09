@@ -1,99 +1,96 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+import { useNavigate } from "react-router-dom";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { supabase } from "@/integrations/supabase/client";
 import { useAppContext } from "@/context/AppContext";
-
-const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }),
-  content: z.string().min(10, {
-    message: "Content must be at least 10 characters.",
-  }),
-  type: z.enum(["announcement", "update", "event", "achievement"], {
-    required_error: "Please select a type.",
-  }),
-  important: z.boolean().default(false),
-});
+import { v4 as uuidv4 } from 'uuid';
 
 const AddNews = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { userProfile } = useAppContext();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-      important: false,
-    },
+  
+  const [newsData, setNewsData] = useState({
+    title: "",
+    content: "",
+    type: "" as "announcement" | "update" | "event" | "achievement",
+    important: false,
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewsData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setNewsData(prev => ({ ...prev, type: value as "announcement" | "update" | "event" | "achievement" }));
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setNewsData(prev => ({ ...prev, important: checked }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newsData.title.trim() || !newsData.content.trim() || !newsData.type) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
     try {
-      setIsSubmitting(true);
-
-      const newsItem = {
-        title: values.title,
-        content: values.content,
-        type: values.type,
-        important: values.important,
+      // Create the news item
+      const newNewsItem = {
+        id: uuidv4(),
+        title: newsData.title,
+        content: newsData.content,
         author: userProfile.name,
         authorRole: userProfile.title,
+        authorAvatar: userProfile.avatar,
         date: new Date().toISOString(),
+        type: newsData.type,
+        important: newsData.important,
         read: false,
-        saved: false,
+        saved: false
       };
-
-      // Since there's no "news" table in the database yet, let's save to localStorage
-      // In a real application, we would first create the table in Supabase
+      
+      // Store in localStorage
       const existingNews = JSON.parse(localStorage.getItem('news') || '[]');
-      const newNewsItem = {
-        ...newsItem,
-        id: crypto.randomUUID()
-      };
-      localStorage.setItem('news', JSON.stringify([...existingNews, newNewsItem]));
-
+      existingNews.unshift(newNewsItem); // Add to beginning of array
+      localStorage.setItem('news', JSON.stringify(existingNews));
+      
       toast({
-        title: "News item created",
-        description: "Your news item has been published successfully.",
+        title: "Success",
+        description: "News item added successfully",
       });
-
       navigate("/news");
     } catch (error) {
-      console.error('Error creating news item:', error);
+      console.error("Error adding news:", error);
       toast({
-        title: "Failed to create news item",
-        description: "Please try again.",
-        variant: "destructive",
+        title: "Failed to add news",
+        description: "An error occurred. Please try again.",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
@@ -103,111 +100,81 @@ const AddNews = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Add News & Updates</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Add News & Update</h1>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>News Item Details</CardTitle>
-          <CardDescription>Create a new news item or announcement.</CardDescription>
-        </CardHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="space-y-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter news title" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+        <form onSubmit={handleSubmit}>
+          <CardHeader>
+            <CardTitle>Create News Item</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input 
+                id="title" 
+                name="title" 
+                placeholder="Enter title" 
+                value={newsData.title}
+                onChange={handleInputChange}
+                required 
               />
-
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select the type of news" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="announcement">Announcement</SelectItem>
-                        <SelectItem value="update">Update</SelectItem>
-                        <SelectItem value="event">Event</SelectItem>
-                        <SelectItem value="achievement">Achievement</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="content">Content</Label>
+              <Textarea
+                id="content"
                 name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Enter the content of your news item..." 
-                        className="min-h-[200px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                placeholder="Enter news content..."
+                rows={6}
+                value={newsData.content}
+                onChange={handleInputChange}
+                required
               />
-
-              <FormField
-                control={form.control}
-                name="important"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Mark as important</FormLabel>
-                      <FormDescription>
-                        Important news will be highlighted and shown at the top.
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/news")}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Publishing..." : "Publish News"}
-              </Button>
-            </CardFooter>
-          </form>
-        </Form>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">Type</Label>
+                <Select 
+                  value={newsData.type} 
+                  onValueChange={handleSelectChange} 
+                  required
+                >
+                  <SelectTrigger id="type">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="announcement">Announcement</SelectItem>
+                    <SelectItem value="update">Update</SelectItem>
+                    <SelectItem value="event">Event</SelectItem>
+                    <SelectItem value="achievement">Achievement</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center space-x-2 h-full">
+                <Checkbox 
+                  id="important" 
+                  checked={newsData.important}
+                  onCheckedChange={handleCheckboxChange}
+                />
+                <Label htmlFor="important" className="font-medium cursor-pointer">
+                  Mark as Important
+                </Label>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button type="button" variant="outline" onClick={() => navigate("/news")}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Adding..." : "Add News"}
+            </Button>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );
