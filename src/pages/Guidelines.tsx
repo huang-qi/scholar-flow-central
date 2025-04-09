@@ -1,9 +1,9 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Upload, FileText, Download, Eye } from "lucide-react";
+import { Search, Upload, FileText } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -11,137 +11,109 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-
-interface GuidelineDocument {
-  id: number;
-  title: string;
-  category: string;
-  version: string;
-  lastUpdated: string;
-  description: string;
-  fileName: string;
-}
-
-const sampleGuidelines: GuidelineDocument[] = [
-  {
-    id: 1,
-    title: "Research Paper Submission Guidelines",
-    category: "Manuscript Submission",
-    version: "2.3",
-    lastUpdated: "2025-02-15",
-    description: "Standard procedures for submitting papers to conferences and journals",
-    fileName: "paper_submission_guidelines.pdf"
-  },
-  {
-    id: 2,
-    title: "Code Repository Standards",
-    category: "Code Management",
-    version: "1.5",
-    lastUpdated: "2025-03-10",
-    description: "Guidelines for organizing and documenting code repositories",
-    fileName: "code_repository_standards.pdf"
-  },
-  {
-    id: 3,
-    title: "Weekly Report Template",
-    category: "Reporting",
-    version: "3.1",
-    lastUpdated: "2025-04-01",
-    description: "Template and instructions for weekly research progress reports",
-    fileName: "weekly_report_template.docx"
-  },
-  {
-    id: 4,
-    title: "Publication Naming Conventions",
-    category: "Naming Conventions",
-    version: "1.2",
-    lastUpdated: "2025-01-20",
-    description: "Standardized naming conventions for research publications",
-    fileName: "publication_naming_conventions.pdf"
-  },
-  {
-    id: 5,
-    title: "Lab Equipment Usage Protocol",
-    category: "Laboratory",
-    version: "2.0",
-    lastUpdated: "2025-03-05",
-    description: "Procedures for safely operating and booking lab equipment",
-    fileName: "lab_equipment_protocol.pdf"
-  },
-  {
-    id: 6,
-    title: "Research Data Storage Policy",
-    category: "Data Management",
-    version: "2.4",
-    lastUpdated: "2025-02-28",
-    description: "Requirements and best practices for research data storage and backup",
-    fileName: "data_storage_policy.pdf"
-  },
-  {
-    id: 7,
-    title: "Collaboration Agreement Template",
-    category: "Collaboration",
-    version: "1.1",
-    lastUpdated: "2025-01-15",
-    description: "Template for establishing research collaboration agreements",
-    fileName: "collaboration_agreement.docx"
-  }
-];
-
-// Group guidelines by category
-const guidelinesByCategory = sampleGuidelines.reduce((acc, guideline) => {
-  if (!acc[guideline.category]) {
-    acc[guideline.category] = [];
-  }
-  acc[guideline.category].push(guideline);
-  return acc;
-}, {} as Record<string, GuidelineDocument[]>);
-
-const GuidelineItem = ({ guideline }: { guideline: GuidelineDocument }) => {
-  return (
-    <Card className="card-hover">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-lg">{guideline.title}</CardTitle>
-          <Badge variant="outline">v{guideline.version}</Badge>
-        </div>
-        <CardDescription>
-          Updated: {new Date(guideline.lastUpdated).toLocaleDateString()}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pb-3">
-        <p className="text-sm text-muted-foreground mb-2">
-          {guideline.description}
-        </p>
-        <div className="text-xs text-muted-foreground">
-          File: {guideline.fileName}
-        </div>
-      </CardContent>
-      <CardFooter className="justify-end">
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline">
-            <Download className="h-4 w-4 mr-1" />
-            Download
-          </Button>
-          <Button size="sm">
-            <Eye className="h-4 w-4 mr-1" />
-            View
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
-  );
-};
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import GuidelineItem from "@/components/guidelines/GuidelineItem";
 
 const Guidelines = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [guidelines, setGuidelines] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const fetchGuidelines = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('guidelines')
+        .select('*');
+      
+      if (error && error.code !== '42P01') { // 42P01 is "table doesn't exist"
+        throw error;
+      }
+      
+      if (data && data.length > 0) {
+        // Format the data to match our component's expected format
+        const formattedGuidelines = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          version: item.version || "1.0",
+          lastUpdated: item.updated_at,
+          description: item.content,
+          fileName: `${item.title.toLowerCase().replace(/\s+/g, '_')}.pdf`
+        }));
+        
+        setGuidelines(formattedGuidelines);
+      } else {
+        // Use sample data if no data in database
+        const sampleGuidelines = [
+          {
+            id: "1",
+            title: "Research Paper Submission Guidelines",
+            category: "Manuscript Submission",
+            version: "2.3",
+            lastUpdated: "2025-02-15",
+            description: "Standard procedures for submitting papers to conferences and journals",
+            fileName: "paper_submission_guidelines.pdf"
+          },
+          {
+            id: "2",
+            title: "Code Repository Standards",
+            category: "Code Management",
+            version: "1.5",
+            lastUpdated: "2025-03-10",
+            description: "Guidelines for organizing and documenting code repositories",
+            fileName: "code_repository_standards.pdf"
+          },
+          {
+            id: "3",
+            title: "Weekly Report Template",
+            category: "Reporting",
+            version: "3.1",
+            lastUpdated: "2025-04-01",
+            description: "Template and instructions for weekly research progress reports",
+            fileName: "weekly_report_template.docx"
+          }
+        ];
+        setGuidelines(sampleGuidelines);
+      }
+    } catch (error) {
+      console.error('Error fetching guidelines:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load guidelines. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGuidelines();
+  }, []);
+
+  const handleGuidelineDeleted = () => {
+    fetchGuidelines();
+  };
 
   // Filter guidelines based on search query
-  const filteredGuidelines = sampleGuidelines.filter(guideline =>
+  const filteredGuidelines = guidelines.filter(guideline =>
     guideline.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     guideline.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     guideline.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
+  const guidelinesByCategory = filteredGuidelines.reduce((acc, guideline) => {
+    if (!acc[guideline.category]) {
+      acc[guideline.category] = [];
+    }
+    acc[guideline.category].push(guideline);
+    return acc;
+  }, {} as Record<string, typeof filteredGuidelines>);
   
   const filteredCategories = Object.keys(guidelinesByCategory).filter(category =>
     category.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -155,7 +127,7 @@ const Guidelines = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Guidelines & Policies</h1>
-        <Button>
+        <Button onClick={() => navigate("/add-guideline")}>
           <Upload className="h-4 w-4 mr-2" />
           Add Guidelines
         </Button>
@@ -173,11 +145,27 @@ const Guidelines = () => {
         </div>
         
         <div className="space-y-4">
-          {searchQuery ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardHeader className="space-y-2">
+                    <div className="h-4 w-2/3 bg-gray-200 rounded" />
+                    <div className="h-3 w-1/2 bg-gray-200 rounded" />
+                  </CardHeader>
+                  <CardContent className="h-12" />
+                </Card>
+              ))}
+            </div>
+          ) : searchQuery ? (
             filteredGuidelines.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredGuidelines.map(guideline => (
-                  <GuidelineItem key={guideline.id} guideline={guideline} />
+                  <GuidelineItem 
+                    key={guideline.id} 
+                    guideline={guideline}
+                    onDelete={handleGuidelineDeleted}
+                  />
                 ))}
               </div>
             ) : (
@@ -191,7 +179,7 @@ const Guidelines = () => {
             )
           ) : (
             <Accordion type="multiple" className="w-full">
-              {Object.keys(guidelinesByCategory).map(category => (
+              {filteredCategories.map(category => (
                 <AccordionItem key={category} value={category}>
                   <AccordionTrigger className="hover:bg-secondary/50 px-4 rounded-lg">
                     <div className="flex items-center gap-2">
@@ -205,7 +193,11 @@ const Guidelines = () => {
                   <AccordionContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 px-2">
                       {guidelinesByCategory[category].map(guideline => (
-                        <GuidelineItem key={guideline.id} guideline={guideline} />
+                        <GuidelineItem 
+                          key={guideline.id} 
+                          guideline={guideline}
+                          onDelete={handleGuidelineDeleted}
+                        />
                       ))}
                     </div>
                   </AccordionContent>

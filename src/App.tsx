@@ -24,6 +24,7 @@ import AddLiterature from "./pages/AddLiterature";
 import AddResearchOutput from "./pages/AddResearchOutput";
 import AddGuideline from "./pages/AddGuideline";
 import AddTool from "./pages/AddTool";
+import AddNews from "./pages/AddNews";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => {
                   <Route path="/guidelines" element={<Guidelines />} />
                   <Route path="/add-guideline" element={<AddGuideline />} />
                   <Route path="/news" element={<News />} />
+                  <Route path="/add-news" element={<AddNews />} />
                   <Route path="/settings" element={<Settings />} />
                 </Route>
                 

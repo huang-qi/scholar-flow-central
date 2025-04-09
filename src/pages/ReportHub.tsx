@@ -1,12 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  FileText, Upload, Filter, Calendar, Search, 
-  Download, MessageSquare, Eye
+  FileText, Upload, Filter, Calendar, Search
 } from "lucide-react";
 import {
   Select,
@@ -23,67 +22,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import ReportItem from "@/components/reports/ReportItem";
+import { useAppContext } from "@/context/AppContext";
 
 const reportTypes = ["Individual", "Internal Group", "Collaborative"];
-
-const ReportItem = ({ report }: { report: any }) => {
-  const navigate = useNavigate();
-  
-  return (
-    <Card className="card-hover">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-lg">{report.title}</CardTitle>
-          <Badge variant={
-            report.type === "Individual" ? "outline" : 
-            report.type === "Internal Group" ? "secondary" : "default"
-          }>{report.type}</Badge>
-        </div>
-        <CardDescription className="flex items-center gap-2">
-          <span>{report.author}</span>
-          <span>•</span>
-          <span>{new Date(report.date).toLocaleDateString()}</span>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pb-2">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {report.keywords && report.keywords.map((keyword: string) => (
-            <Badge key={keyword} variant="secondary" className="text-xs">
-              {keyword}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-between pt-0">
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Eye className="h-4 w-4" />
-            <span>{report.views || 0}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <MessageSquare className="h-4 w-4" />
-            <span>{report.comments || 0}</span>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost">
-            <Download className="h-4 w-4 mr-1" />
-            Download
-          </Button>
-          <Button size="sm">
-            <Eye className="h-4 w-4 mr-1" />
-            View
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
-  );
-};
 
 const ReportHub = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -92,32 +37,37 @@ const ReportHub = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { userProfile } = useAppContext();
+
+  const fetchReports = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*');
+      
+      if (error) throw error;
+      
+      setReports(data || []);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load reports. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error } = await supabase
-          .from('reports')
-          .select('*');
-        
-        if (error) throw error;
-        
-        setReports(data || []);
-      } catch (error) {
-        console.error('Error fetching reports:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load reports. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchReports();
   }, [toast]);
+
+  const handleReportDeleted = () => {
+    fetchReports();
+  };
 
   const filteredReports = reports.filter(report => {
     // Filter by search query
@@ -210,7 +160,11 @@ const ReportHub = () => {
             ) : filteredReports.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {filteredReports.map(report => (
-                  <ReportItem key={report.id} report={report} />
+                  <ReportItem 
+                    key={report.id} 
+                    report={report}
+                    onReportDeleted={handleReportDeleted} 
+                  />
                 ))}
               </div>
             ) : (
@@ -226,23 +180,34 @@ const ReportHub = () => {
           <TabsContent value="my">
             <div className="grid grid-cols-1 gap-4">
               {!isLoading && reports
-                .filter(report => report.author === "David Bennett")
+                .filter(report => report.author === userProfile.name)
                 .map(report => (
-                  <ReportItem key={report.id} report={report} />
+                  <ReportItem 
+                    key={report.id} 
+                    report={report}
+                    onReportDeleted={handleReportDeleted} 
+                  />
                 ))}
             </div>
           </TabsContent>
           <TabsContent value="recent">
             <div className="grid grid-cols-1 gap-4">
               {!isLoading && reports.slice(0, 2).map(report => (
-                <ReportItem key={report.id} report={report} />
+                <ReportItem 
+                  key={report.id} 
+                  report={report}
+                  onReportDeleted={handleReportDeleted} 
+                />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="saved">
             <div className="grid grid-cols-1 gap-4">
               {!isLoading && reports.length > 0 && (
-                <ReportItem report={reports[0]} />
+                <ReportItem 
+                  report={reports[0]}
+                  onReportDeleted={handleReportDeleted} 
+                />
               )}
             </div>
           </TabsContent>

@@ -1,13 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { 
-  Book, Search, Filter, Upload, Clock, 
-  BookOpen, Star, StarHalf, Download, Link, ExternalLink
+  Book, Search, Filter, Upload, Clock
 } from "lucide-react";
 import {
   Select,
@@ -16,162 +14,102 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Publication {
-  id: number;
-  title: string;
-  authors: string[];
-  journal?: string;
-  year: number;
-  doi?: string;
-  tags: string[];
-  rating?: number;
-  notes: boolean;
-}
-
-const samplePublications: Publication[] = [
-  {
-    id: 1,
-    title: "Attention Is All You Need",
-    authors: ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar"],
-    journal: "NeurIPS",
-    year: 2017,
-    doi: "10.48550/arXiv.1706.03762",
-    tags: ["NLP", "Transformer", "Attention"],
-    rating: 5,
-    notes: true
-  },
-  {
-    id: 2,
-    title: "Deep Residual Learning for Image Recognition",
-    authors: ["Kaiming He", "Xiangyu Zhang", "Shaoqing Ren", "Jian Sun"],
-    journal: "CVPR",
-    year: 2016,
-    doi: "10.1109/CVPR.2016.90",
-    tags: ["Computer Vision", "CNN", "ResNet"],
-    rating: 5,
-    notes: true
-  },
-  {
-    id: 3,
-    title: "Language Models are Few-Shot Learners",
-    authors: ["Tom B. Brown", "Benjamin Mann", "Nick Ryder"],
-    journal: "NeurIPS",
-    year: 2020,
-    doi: "10.48550/arXiv.2005.14165",
-    tags: ["NLP", "GPT", "Few-shot Learning"],
-    rating: 4,
-    notes: false
-  },
-  {
-    id: 4,
-    title: "A Generalized Framework for Population Based Training",
-    authors: ["Martin Jaderberg", "Valentin Dalibard", "Jack W. Rae"],
-    journal: "KDD",
-    year: 2019,
-    doi: "10.48550/arXiv.1902.01894",
-    tags: ["Optimization", "Hyperparameter Tuning"],
-    rating: 3,
-    notes: false
-  },
-  {
-    id: 5,
-    title: "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
-    authors: ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
-    journal: "NAACL",
-    year: 2019,
-    doi: "10.48550/arXiv.1810.04805",
-    tags: ["NLP", "BERT", "Transformer"],
-    rating: 5,
-    notes: true
-  },
-  {
-    id: 6,
-    title: "Reinforcement Learning with Human Feedback",
-    authors: ["Noel Bard", "Jakob Foerster", "Thore Graepel"],
-    journal: "Nature Machine Intelligence",
-    year: 2022,
-    tags: ["RL", "Human Feedback", "LLM"],
-    rating: 4,
-    notes: true
-  }
-];
-
-const PublicationCard = ({ publication }: { publication: Publication }) => {
-  return (
-    <Card className="card-hover">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg leading-tight">{publication.title}</CardTitle>
-        <CardDescription>
-          {publication.authors.slice(0, 3).join(", ")}
-          {publication.authors.length > 3 ? ", et al." : ""}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pb-2">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {publication.tags.map(tag => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-        <div className="flex justify-between items-center text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            {publication.journal && `${publication.journal}, `}
-            <span>{publication.year}</span>
-          </div>
-          <div className="flex items-center">
-            {publication.rating && Array(publication.rating).fill(0).map((_, i) => (
-              <Star key={i} className="h-4 w-4 text-amber-500" />
-            ))}
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="justify-between pt-2">
-        <div className="flex items-center text-sm">
-          {publication.notes && (
-            <div className="flex items-center gap-1 text-teal-600">
-              <BookOpen className="h-4 w-4" />
-              <span>Notes</span>
-            </div>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline">
-            <Download className="h-4 w-4 mr-1" />
-            PDF
-          </Button>
-          {publication.doi && (
-            <Button size="sm" variant="outline">
-              <ExternalLink className="h-4 w-4 mr-1" />
-              DOI
-            </Button>
-          )}
-          <Button size="sm">
-            <BookOpen className="h-4 w-4 mr-1" />
-            Read
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
-  );
-};
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import PublicationCard from "@/components/literature/PublicationCard";
 
 const LiteratureManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [publications, setPublications] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const fetchPublications = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('literature')
+        .select('*');
+      
+      if (error && error.code !== '42P01') { // 42P01 is "table doesn't exist"
+        throw error;
+      }
+      
+      if (data && data.length > 0) {
+        setPublications(data);
+      } else {
+        // Sample data
+        const samplePublications = [
+          {
+            id: "1",
+            title: "Attention Is All You Need",
+            authors: ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar"],
+            journal: "NeurIPS",
+            year: 2017,
+            doi: "10.48550/arXiv.1706.03762",
+            tags: ["NLP", "Transformer", "Attention"],
+            rating: 5,
+            notes: true
+          },
+          {
+            id: "2",
+            title: "Deep Residual Learning for Image Recognition",
+            authors: ["Kaiming He", "Xiangyu Zhang", "Shaoqing Ren", "Jian Sun"],
+            journal: "CVPR",
+            year: 2016,
+            doi: "10.1109/CVPR.2016.90",
+            tags: ["Computer Vision", "CNN", "ResNet"],
+            rating: 5,
+            notes: true
+          },
+          {
+            id: "3",
+            title: "Language Models are Few-Shot Learners",
+            authors: ["Tom B. Brown", "Benjamin Mann", "Nick Ryder"],
+            journal: "NeurIPS",
+            year: 2020,
+            doi: "10.48550/arXiv.2005.14165",
+            tags: ["NLP", "GPT", "Few-shot Learning"],
+            rating: 4,
+            notes: false
+          }
+        ];
+        setPublications(samplePublications);
+      }
+    } catch (error) {
+      console.error('Error fetching literature:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load literature. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPublications();
+  }, []);
+
+  const handlePublicationDeleted = () => {
+    fetchPublications();
+  };
 
   // Get unique tags from all publications
   const allTags = Array.from(
-    new Set(samplePublications.flatMap(pub => pub.tags))
+    new Set(publications.flatMap(pub => pub.tags))
   ).sort();
 
-  const filteredPublications = samplePublications.filter(pub => {
+  const filteredPublications = publications.filter(pub => {
     // Filter by search query
     const matchesSearch = !searchQuery || 
       pub.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pub.authors.some(a => a.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      pub.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      pub.authors.some((a: string) => a.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      pub.tags.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase()));
     
     // Filter by tag
     const matchesTag = !selectedTag || pub.tags.includes(selectedTag);
@@ -183,7 +121,7 @@ const LiteratureManagement = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Literature</h1>
-        <Button>
+        <Button onClick={() => navigate("/add-literature")}>
           <Upload className="h-4 w-4 mr-2" />
           Add Literature
         </Button>
@@ -224,7 +162,7 @@ const LiteratureManagement = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Years</SelectItem>
-                {Array.from(new Set(samplePublications.map(p => p.year)))
+                {Array.from(new Set(publications.map(p => p.year)))
                   .sort((a, b) => b - a)
                   .map(year => (
                     <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
@@ -244,9 +182,23 @@ const LiteratureManagement = () => {
           </TabsList>
           <TabsContent value="all" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredPublications.length > 0 ? (
+              {isLoading ? (
+                [...Array(4)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardHeader className="space-y-2">
+                      <div className="h-4 w-2/3 bg-gray-200 rounded" />
+                      <div className="h-3 w-1/2 bg-gray-200 rounded" />
+                    </CardHeader>
+                    <CardContent className="h-12" />
+                  </Card>
+                ))
+              ) : filteredPublications.length > 0 ? (
                 filteredPublications.map(pub => (
-                  <PublicationCard key={pub.id} publication={pub} />
+                  <PublicationCard 
+                    key={pub.id} 
+                    publication={pub}
+                    onDelete={handlePublicationDeleted}
+                  />
                 ))
               ) : (
                 <div className="text-center py-12 col-span-2">
@@ -262,23 +214,35 @@ const LiteratureManagement = () => {
           <TabsContent value="recent">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Just showing a couple of recent items */}
-              {samplePublications.slice(0, 4).map(pub => (
-                <PublicationCard key={pub.id} publication={pub} />
+              {!isLoading && publications.slice(0, 4).map(pub => (
+                <PublicationCard 
+                  key={pub.id} 
+                  publication={pub}
+                  onDelete={handlePublicationDeleted}
+                />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="notes">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {samplePublications.filter(pub => pub.notes).map(pub => (
-                <PublicationCard key={pub.id} publication={pub} />
+              {!isLoading && publications.filter(pub => pub.notes).map(pub => (
+                <PublicationCard 
+                  key={pub.id} 
+                  publication={pub}
+                  onDelete={handlePublicationDeleted}
+                />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="favorites">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Just showing items with high ratings */}
-              {samplePublications.filter(pub => pub.rating === 5).map(pub => (
-                <PublicationCard key={pub.id} publication={pub} />
+              {!isLoading && publications.filter(pub => pub.rating === 5).map(pub => (
+                <PublicationCard 
+                  key={pub.id} 
+                  publication={pub}
+                  onDelete={handlePublicationDeleted}
+                />
               ))}
             </div>
           </TabsContent>
