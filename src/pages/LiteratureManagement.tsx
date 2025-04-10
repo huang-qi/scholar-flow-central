@@ -18,11 +18,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import PublicationCard from "@/components/literature/PublicationCard";
+import { Publication } from "@/components/literature/PublicationCard";
 
 const LiteratureManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [publications, setPublications] = useState<any[]>([]);
+  const [publications, setPublications] = useState<Publication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -31,54 +32,21 @@ const LiteratureManagement = () => {
     try {
       setIsLoading(true);
       
-      // Check local storage first
-      const storedPublications = localStorage.getItem('literature');
-      if (storedPublications) {
-        setPublications(JSON.parse(storedPublications));
-        setIsLoading(false);
-        return;
-      }
+      const { data, error } = await supabase
+        .from('literature')
+        .select('*');
       
-      // If no local storage data, use sample data
-      const samplePublications = [
-        {
-          id: "1",
-          title: "Attention Is All You Need",
-          authors: ["Ashish Vaswani", "Noam Shazeer", "Niki Parmar"],
-          journal: "NeurIPS",
-          year: 2017,
-          doi: "10.48550/arXiv.1706.03762",
-          tags: ["NLP", "Transformer", "Attention"],
-          rating: 5,
-          notes: true
-        },
-        {
-          id: "2",
-          title: "Deep Residual Learning for Image Recognition",
-          authors: ["Kaiming He", "Xiangyu Zhang", "Shaoqing Ren", "Jian Sun"],
-          journal: "CVPR",
-          year: 2016,
-          doi: "10.1109/CVPR.2016.90",
-          tags: ["Computer Vision", "CNN", "ResNet"],
-          rating: 5,
-          notes: true
-        },
-        {
-          id: "3",
-          title: "Language Models are Few-Shot Learners",
-          authors: ["Tom B. Brown", "Benjamin Mann", "Nick Ryder"],
-          journal: "NeurIPS",
-          year: 2020,
-          doi: "10.48550/arXiv.2005.14165",
-          tags: ["NLP", "GPT", "Few-shot Learning"],
-          rating: 4,
-          notes: false
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        setPublications(data);
+      } else {
+        // If no data, check local storage as fallback
+        const storedPublications = localStorage.getItem('literature');
+        if (storedPublications) {
+          setPublications(JSON.parse(storedPublications));
         }
-      ];
-      setPublications(samplePublications);
-      
-      // Save to localStorage for future use
-      localStorage.setItem('literature', JSON.stringify(samplePublications));
+      }
     } catch (error) {
       console.error('Error fetching literature:', error);
       toast({
@@ -95,18 +63,60 @@ const LiteratureManagement = () => {
     fetchPublications();
   }, []);
 
-  const handlePublicationDeleted = (id: string) => {
-    const updatedPublications = publications.filter(pub => pub.id !== id);
-    setPublications(updatedPublications);
-    localStorage.setItem('literature', JSON.stringify(updatedPublications));
+  const handlePublicationDeleted = async (id: string) => {
+    try {
+      // Delete from Supabase
+      const { error } = await supabase
+        .from('literature')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setPublications(prev => prev.filter(pub => pub.id !== id));
+      
+      toast({
+        title: "Success",
+        description: "Publication deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting publication:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete publication",
+        variant: "destructive",
+      });
+    }
   };
   
-  const handleToggleSaved = (id: string) => {
-    const updatedPublications = publications.map(pub => 
-      pub.id === id ? { ...pub, saved: !pub.saved } : pub
-    );
-    setPublications(updatedPublications);
-    localStorage.setItem('literature', JSON.stringify(updatedPublications));
+  const handleToggleSaved = async (id: string) => {
+    try {
+      // Find the publication to toggle
+      const publication = publications.find(pub => pub.id === id);
+      if (!publication) return;
+      
+      // Update in Supabase
+      const { error } = await supabase
+        .from('literature')
+        .update({ saved: !publication.saved })
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setPublications(prev => prev.map(pub => 
+        pub.id === id ? { ...pub, saved: !pub.saved } : pub
+      ));
+      
+    } catch (error) {
+      console.error('Error toggling saved status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update saved status",
+        variant: "destructive",
+      });
+    }
   };
 
   // Get unique tags from all publications

@@ -42,6 +42,48 @@ export type Database = {
         }
         Relationships: []
       }
+      literature: {
+        Row: {
+          authors: string[]
+          created_at: string
+          doi: string | null
+          id: string
+          journal: string
+          notes: boolean
+          rating: number
+          saved: boolean
+          tags: string[]
+          title: string
+          year: number
+        }
+        Insert: {
+          authors: string[]
+          created_at?: string
+          doi?: string | null
+          id?: string
+          journal: string
+          notes?: boolean
+          rating?: number
+          saved?: boolean
+          tags?: string[]
+          title: string
+          year: number
+        }
+        Update: {
+          authors?: string[]
+          created_at?: string
+          doi?: string | null
+          id?: string
+          journal?: string
+          notes?: boolean
+          rating?: number
+          saved?: boolean
+          tags?: string[]
+          title?: string
+          year?: number
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           author: string
@@ -88,6 +130,7 @@ export type Database = {
           created_at: string
           id: string
           link: string | null
+          saved: boolean | null
           tags: string[]
           title: string
           type: string
@@ -100,6 +143,7 @@ export type Database = {
           created_at?: string
           id?: string
           link?: string | null
+          saved?: boolean | null
           tags?: string[]
           title: string
           type: string
@@ -112,6 +156,7 @@ export type Database = {
           created_at?: string
           id?: string
           link?: string | null
+          saved?: boolean | null
           tags?: string[]
           title?: string
           type?: string

@@ -35,9 +35,7 @@ const ResearchOutput = () => {
         .from('research_outputs')
         .select('*');
       
-      if (error && error.code !== '42P01') { // 42P01 is "table doesn't exist"
-        throw error;
-      }
+      if (error) throw error;
       
       if (data && data.length > 0) {
         setOutputs(data);
@@ -75,7 +73,14 @@ const ResearchOutput = () => {
             citations: 3
           }
         ];
-        setOutputs(sampleOutputs);
+        
+        // Insert sample data if needed
+        if (data.length === 0) {
+          for (const sample of sampleOutputs) {
+            await supabase.from('research_outputs').insert(sample);
+          }
+          setOutputs(sampleOutputs);
+        }
       }
     } catch (error) {
       console.error('Error fetching research outputs:', error);
@@ -93,8 +98,31 @@ const ResearchOutput = () => {
     fetchOutputs();
   }, []);
 
-  const handleOutputDeleted = () => {
-    fetchOutputs();
+  const handleOutputDeleted = async (id: string) => {
+    try {
+      // Delete from Supabase
+      const { error } = await supabase
+        .from('research_outputs')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setOutputs(prev => prev.filter(output => output.id !== id));
+      
+      toast({
+        title: "Success",
+        description: "Research output deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting research output:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete research output",
+        variant: "destructive",
+      });
+    }
   };
 
   // Get years for filtering
@@ -227,7 +255,7 @@ const ResearchOutput = () => {
                   <OutputCard 
                     key={output.id} 
                     output={output}
-                    onDelete={handleOutputDeleted} 
+                    onDelete={() => handleOutputDeleted(output.id)} 
                   />
                 ))
               ) : (
@@ -249,7 +277,7 @@ const ResearchOutput = () => {
                   <OutputCard 
                     key={output.id} 
                     output={output}
-                    onDelete={handleOutputDeleted} 
+                    onDelete={() => handleOutputDeleted(output.id)} 
                   />
                 ))}
             </div>
@@ -262,7 +290,7 @@ const ResearchOutput = () => {
                   <OutputCard 
                     key={output.id} 
                     output={output}
-                    onDelete={handleOutputDeleted} 
+                    onDelete={() => handleOutputDeleted(output.id)} 
                   />
                 ))}
             </div>
@@ -275,7 +303,7 @@ const ResearchOutput = () => {
                   <OutputCard 
                     key={output.id} 
                     output={output}
-                    onDelete={handleOutputDeleted} 
+                    onDelete={() => handleOutputDeleted(output.id)} 
                   />
                 ))}
             </div>
