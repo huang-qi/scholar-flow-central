@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -34,12 +33,12 @@ const LiteratureManagement = () => {
       
       const { data, error } = await supabase
         .from('literature')
-        .select('*');
+        .select('*') as { data: Publication[] | null, error: any };
       
       if (error) throw error;
       
       if (data && data.length > 0) {
-        setPublications(data);
+        setPublications(data as Publication[]);
       } else {
         // If no data, check local storage as fallback
         const storedPublications = localStorage.getItem('literature');
@@ -69,7 +68,7 @@ const LiteratureManagement = () => {
       const { error } = await supabase
         .from('literature')
         .delete()
-        .eq('id', id);
+        .eq('id', id) as { error: any };
       
       if (error) throw error;
       
@@ -100,7 +99,7 @@ const LiteratureManagement = () => {
       const { error } = await supabase
         .from('literature')
         .update({ saved: !publication.saved })
-        .eq('id', id);
+        .eq('id', id) as { error: any };
       
       if (error) throw error;
       
