@@ -40,7 +40,7 @@ export function ProfileSection() {
       await uploadAvatar(file);
       // Avatar URL is already updated in the context through uploadAvatar
     } catch (error) {
-      console.error("Avatar upload failed:", error);
+      console.error("头像上传失败:", error);
     } finally {
       setIsUploading(false);
       // Reset the file input
@@ -98,9 +98,9 @@ export function ProfileSection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
+          <CardTitle>个人资料信息</CardTitle>
           <CardDescription>
-            Update your personal information and how others see you on the platform.
+            更新您的个人信息以及您在平台上的展示方式。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -121,7 +121,7 @@ export function ProfileSection() {
               </Avatar>
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={handleAvatarClick}>
                 {isUploading ? (
-                  <div className="text-white text-xs">Uploading...</div>
+                  <div className="text-white text-xs">上传中...</div>
                 ) : (
                   <Button variant="ghost" size="icon" className="text-white">
                     <Camera className="h-5 w-5" />
@@ -132,7 +132,7 @@ export function ProfileSection() {
             <div className="space-y-4 flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">姓名</Label>
                   <Input 
                     id="name" 
                     name="name" 
@@ -141,7 +141,7 @@ export function ProfileSection() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">电子邮箱</Label>
                   <Input 
                     id="email" 
                     name="email" 
@@ -153,7 +153,7 @@ export function ProfileSection() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">职称</Label>
                   <Input 
                     id="title" 
                     name="title" 
@@ -162,7 +162,7 @@ export function ProfileSection() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="department">Department</Label>
+                  <Label htmlFor="department">部门</Label>
                   <Input 
                     id="department" 
                     name="department" 
@@ -172,7 +172,7 @@ export function ProfileSection() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="bio">Biography</Label>
+                <Label htmlFor="bio">个人简介</Label>
                 <textarea 
                   id="bio" 
                   name="bio" 
@@ -183,7 +183,7 @@ export function ProfileSection() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Research Interests & Skills</Label>
+                <Label>研究兴趣与技能</Label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {profile.tags.map(tag => (
                     <Badge key={tag} variant="secondary" className="flex items-center gap-1">
@@ -200,7 +200,7 @@ export function ProfileSection() {
                 </div>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Add a tag..."
+                    placeholder="添加标签..."
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -214,7 +214,7 @@ export function ProfileSection() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={handleSave}>Save Changes</Button>
+          <Button onClick={handleSave}>保存更改</Button>
         </CardFooter>
       </Card>
     </div>
