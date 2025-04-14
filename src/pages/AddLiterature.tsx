@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +41,7 @@ const AddLiterature = () => {
     setIsSubmitting(true);
     
     try {
-      // Format the data for Supabase
+      // 为 Supabase 格式化数据
       const { data, error } = await supabase
         .from('literature')
         .insert({
@@ -52,21 +53,21 @@ const AddLiterature = () => {
           tags: formData.keywords.split(',').map(k => k.trim()),
           rating: 0,
           notes: false
-        } as any) // Use type assertion to bypass TypeScript check
+        } as any) // 使用类型断言绕过 TypeScript 检查
         .select();
       
       if (error) throw error;
       
       toast({
-        title: "Success",
-        description: "Literature item added successfully",
+        title: "成功",
+        description: "文献条目添加成功",
       });
       navigate("/literature");
     } catch (error) {
-      console.error('Error adding literature:', error);
+      console.error('添加文献出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to add literature. Please try again.",
+        title: "错误",
+        description: "添加文献失败，请重试。",
         variant: "destructive",
       });
     } finally {
@@ -77,20 +78,20 @@ const AddLiterature = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Add Literature</h1>
+        <h1 className="text-3xl font-bold tracking-tight">添加文献</h1>
       </div>
 
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>Literature Details</CardTitle>
+            <CardTitle>文献详情</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">标题</Label>
               <Input 
                 id="title" 
-                placeholder="Enter title" 
+                placeholder="输入标题" 
                 required 
                 value={formData.title}
                 onChange={handleChange}
@@ -99,26 +100,26 @@ const AddLiterature = () => {
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="type">Type</Label>
+                <Label htmlFor="type">类型</Label>
                 <Select 
                   value={formData.type} 
                   onValueChange={(value) => handleSelectChange("type", value)}
                 >
                   <SelectTrigger id="type">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue placeholder="选择类型" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="article">Journal Article</SelectItem>
-                    <SelectItem value="book">Book</SelectItem>
-                    <SelectItem value="conference">Conference Paper</SelectItem>
-                    <SelectItem value="thesis">Thesis</SelectItem>
-                    <SelectItem value="report">Report</SelectItem>
+                    <SelectItem value="article">期刊文章</SelectItem>
+                    <SelectItem value="book">书籍</SelectItem>
+                    <SelectItem value="conference">会议论文</SelectItem>
+                    <SelectItem value="thesis">学位论文</SelectItem>
+                    <SelectItem value="report">报告</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="year">Publication Year</Label>
+                <Label htmlFor="year">出版年份</Label>
                 <Input 
                   id="year" 
                   type="number" 
@@ -131,10 +132,10 @@ const AddLiterature = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="authors">Authors</Label>
+              <Label htmlFor="authors">作者</Label>
               <Input 
                 id="authors" 
-                placeholder="Authors (separated by commas)" 
+                placeholder="作者（用逗号分隔）" 
                 required 
                 value={formData.authors}
                 onChange={handleChange}
@@ -142,10 +143,10 @@ const AddLiterature = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="journal">Source/Journal/Publisher</Label>
+              <Label htmlFor="journal">来源/期刊/出版社</Label>
               <Input 
                 id="journal" 
-                placeholder="Publication source" 
+                placeholder="出版来源" 
                 value={formData.journal}
                 onChange={handleChange}
                 required
@@ -153,10 +154,10 @@ const AddLiterature = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="abstract">Abstract</Label>
+              <Label htmlFor="abstract">摘要</Label>
               <Textarea 
                 id="abstract" 
-                placeholder="Enter abstract or summary..." 
+                placeholder="输入摘要或总结..." 
                 rows={4}
                 value={formData.abstract}
                 onChange={handleChange}
@@ -164,36 +165,36 @@ const AddLiterature = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="keywords">Keywords</Label>
+              <Label htmlFor="keywords">关键词</Label>
               <Input 
                 id="keywords" 
-                placeholder="Separate keywords with commas" 
+                placeholder="关键词用逗号分隔" 
                 value={formData.keywords}
                 onChange={handleChange}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="doi">DOI (Digital Object Identifier)</Label>
+              <Label htmlFor="doi">DOI (数字对象标识符)</Label>
               <Input 
                 id="doi" 
-                placeholder="e.g., 10.1000/xyz123" 
+                placeholder="例如：10.1000/xyz123" 
                 value={formData.doi}
                 onChange={handleChange}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="file">Upload PDF (optional)</Label>
+              <Label htmlFor="file">上传 PDF（可选）</Label>
               <Input id="file" type="file" accept=".pdf" />
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button type="button" variant="outline" onClick={() => navigate("/literature")}>
-              Cancel
+              取消
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add Literature"}
+              {isSubmitting ? "添加中..." : "添加文献"}
             </Button>
           </CardFooter>
         </form>

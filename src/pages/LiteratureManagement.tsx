@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -40,17 +41,17 @@ const LiteratureManagement = () => {
       if (data && data.length > 0) {
         setPublications(data as Publication[]);
       } else {
-        // If no data, check local storage as fallback
+        // 如果没有数据，检查本地存储作为备用
         const storedPublications = localStorage.getItem('literature');
         if (storedPublications) {
           setPublications(JSON.parse(storedPublications));
         }
       }
     } catch (error) {
-      console.error('Error fetching literature:', error);
+      console.error('获取文献时出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to load literature. Please try again.",
+        title: "错误",
+        description: "加载文献失败。请重试。",
         variant: "destructive",
       });
     } finally {
@@ -64,7 +65,7 @@ const LiteratureManagement = () => {
 
   const handlePublicationDeleted = async (id: string) => {
     try {
-      // Delete from Supabase
+      // 从 Supabase 删除
       const { error } = await supabase
         .from('literature')
         .delete()
@@ -72,18 +73,18 @@ const LiteratureManagement = () => {
       
       if (error) throw error;
       
-      // Update local state
+      // 更新本地状态
       setPublications(prev => prev.filter(pub => pub.id !== id));
       
       toast({
-        title: "Success",
-        description: "Publication deleted successfully",
+        title: "成功",
+        description: "文献删除成功",
       });
     } catch (error) {
-      console.error('Error deleting publication:', error);
+      console.error('删除文献时出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete publication",
+        title: "错误",
+        description: "删除文献失败",
         variant: "destructive",
       });
     }
@@ -91,11 +92,11 @@ const LiteratureManagement = () => {
   
   const handleToggleSaved = async (id: string) => {
     try {
-      // Find the publication to toggle
+      // 找到要切换的文献
       const publication = publications.find(pub => pub.id === id);
       if (!publication) return;
       
-      // Update in Supabase
+      // 在 Supabase 中更新
       const { error } = await supabase
         .from('literature')
         .update({ saved: !publication.saved })
@@ -103,34 +104,34 @@ const LiteratureManagement = () => {
       
       if (error) throw error;
       
-      // Update local state
+      // 更新本地状态
       setPublications(prev => prev.map(pub => 
         pub.id === id ? { ...pub, saved: !pub.saved } : pub
       ));
       
     } catch (error) {
-      console.error('Error toggling saved status:', error);
+      console.error('切换保存状态时出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to update saved status",
+        title: "错误",
+        description: "更新保存状态失败",
         variant: "destructive",
       });
     }
   };
 
-  // Get unique tags from all publications
+  // 从所有文献中获取唯一标签
   const allTags = Array.from(
     new Set(publications.flatMap(pub => pub.tags))
   ).sort();
 
   const filteredPublications = publications.filter(pub => {
-    // Filter by search query
+    // 按搜索查询过滤
     const matchesSearch = !searchQuery || 
       pub.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pub.authors.some((a: string) => a.toLowerCase().includes(searchQuery.toLowerCase())) ||
       pub.tags.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    // Filter by tag
+    // 按标签过滤
     const matchesTag = !selectedTag || pub.tags.includes(selectedTag);
     
     return matchesSearch && matchesTag;
@@ -139,10 +140,10 @@ const LiteratureManagement = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Literature</h1>
+        <h1 className="text-3xl font-bold tracking-tight">文献</h1>
         <Button onClick={() => navigate("/add-literature")}>
           <Upload className="h-4 w-4 mr-2" />
-          Add Literature
+          添加文献
         </Button>
       </div>
 
@@ -151,7 +152,7 @@ const LiteratureManagement = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input 
-              placeholder="Search literature..." 
+              placeholder="搜索文献..." 
               className="pl-9"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -162,11 +163,11 @@ const LiteratureManagement = () => {
               <SelectTrigger className="w-[180px]">
                 <div className="flex items-center">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Filter by tag" />
+                  <SelectValue placeholder="按标签筛选" />
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Tags</SelectItem>
+                <SelectItem value="all">所有标签</SelectItem>
                 {allTags.map(tag => (
                   <SelectItem key={tag} value={tag}>{tag}</SelectItem>
                 ))}
@@ -176,11 +177,11 @@ const LiteratureManagement = () => {
               <SelectTrigger className="w-[140px]">
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Year" />
+                  <SelectValue placeholder="年份" />
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Years</SelectItem>
+                <SelectItem value="all">所有年份</SelectItem>
                 {Array.from(new Set(publications.map(p => p.year)))
                   .sort((a, b) => b - a)
                   .map(year => (
@@ -194,10 +195,10 @@ const LiteratureManagement = () => {
 
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="all">All Literature</TabsTrigger>
-            <TabsTrigger value="recent">Recent</TabsTrigger>
-            <TabsTrigger value="notes">With Notes</TabsTrigger>
-            <TabsTrigger value="favorites">Favorites</TabsTrigger>
+            <TabsTrigger value="all">所有文献</TabsTrigger>
+            <TabsTrigger value="recent">最近</TabsTrigger>
+            <TabsTrigger value="notes">有笔记</TabsTrigger>
+            <TabsTrigger value="favorites">收藏</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -223,9 +224,9 @@ const LiteratureManagement = () => {
               ) : (
                 <div className="text-center py-12 col-span-2">
                   <Book className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">No literature found</h3>
+                  <h3 className="text-lg font-medium">未找到文献</h3>
                   <p className="text-sm text-muted-foreground">
-                    Try adjusting your search or filter criteria
+                    尝试调整您的搜索或筛选条件
                   </p>
                 </div>
               )}

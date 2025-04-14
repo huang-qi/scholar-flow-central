@@ -17,13 +17,13 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication
+    // 模拟身份验证
     setTimeout(() => {
       setIsLoading(false);
       navigate("/");
       toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
+        title: "欢迎回来！",
+        description: "您已成功登录。",
       });
     }, 1000);
   };
@@ -33,9 +33,9 @@ const Login = () => {
       <div className="w-full max-w-md px-4">
         <Card className="border-2">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">Scholar Flow Central</CardTitle>
+            <CardTitle className="text-2xl font-bold">学术研究管理平台</CardTitle>
             <CardDescription>
-              Enter your credentials to access the research platform
+              输入您的凭据以访问研究平台
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -53,7 +53,7 @@ const Login = () => {
               <div className="space-y-2">
                 <Input
                   id="password"
-                  placeholder="Password"
+                  placeholder="密码"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -61,14 +61,14 @@ const Login = () => {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "正在登录..." : "登录"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col">
             <div className="text-sm text-center text-muted-foreground">
               <a href="#" className="underline hover:text-primary">
-                Forgot password?
+                忘记密码？
               </a>
             </div>
           </CardFooter>

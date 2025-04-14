@@ -26,9 +26,9 @@ const Profile = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold mb-2">My Profile</h1>
+        <h1 className="text-3xl font-bold mb-2">我的个人资料</h1>
         <p className="text-muted-foreground">
-          View your personal profile information.
+          查看您的个人资料信息。
         </p>
       </div>
 
@@ -46,14 +46,14 @@ const Profile = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="font-medium mb-2">Biography</h3>
+            <h3 className="font-medium mb-2">个人简介</h3>
             <p className="text-sm">
-              {userProfile.bio || "No biography provided."}
+              {userProfile.bio || "暂无个人简介。"}
             </p>
           </div>
 
           <div>
-            <h3 className="font-medium mb-2">Research Interests & Skills</h3>
+            <h3 className="font-medium mb-2">研究兴趣与技能</h3>
             <div className="flex flex-wrap gap-2">
               {userProfile.tags.length > 0 ? (
                 userProfile.tags.map((tag) => (
@@ -62,14 +62,14 @@ const Profile = () => {
                   </Badge>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">No tags added yet.</p>
+                <p className="text-sm text-muted-foreground">尚未添加标签。</p>
               )}
             </div>
           </div>
 
           <div>
-            <h3 className="font-medium mb-2">Contact</h3>
-            <p className="text-sm">{userProfile.email || "No email provided."}</p>
+            <h3 className="font-medium mb-2">联系方式</h3>
+            <p className="text-sm">{userProfile.email || "暂无电子邮箱。"}</p>
           </div>
         </CardContent>
       </Card>

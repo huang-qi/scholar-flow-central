@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +12,7 @@ import { useAppContext } from "@/context/AppContext";
 const ActivityHeatmap = () => {
   const generateActivityData = () => {
     const today = new Date();
-    const daysToShow = 90; // ~3 months
+    const daysToShow = 90; // ~3个月
     const data = [];
     
     for (let i = daysToShow; i >= 0; i--) {
@@ -33,12 +34,12 @@ const ActivityHeatmap = () => {
 
   return (
     <div className="space-y-3">
-      <div className="text-sm font-medium">Activity Contributions</div>
+      <div className="text-sm font-medium">活动贡献</div>
       <div className="flex flex-wrap gap-1">
         {activityData.map((day) => (
           <div
             key={day.date}
-            title={`${day.date}: ${day.level} contributions`}
+            title={`${day.date}: ${day.level} 项贡献`}
             className={`h-3 w-3 rounded-sm ${
               day.level === 0
                 ? "bg-gray-100"
@@ -54,8 +55,8 @@ const ActivityHeatmap = () => {
         ))}
       </div>
       <div className="flex justify-between text-xs text-muted-foreground">
-        <div>Less</div>
-        <div>More</div>
+        <div>较少</div>
+        <div>较多</div>
       </div>
     </div>
   );
@@ -66,10 +67,10 @@ const Dashboard = () => {
   const { userProfile, isProfileLoading } = useAppContext();
 
   const contributionData = {
-    categories: ["Reports", "Literature", "Research", "Tools", "Comments"],
+    categories: ["报告", "文献", "研究", "工具", "评论"],
     series: [
       {
-        name: "Contributions",
+        name: "贡献",
         data: [12, 5, 8, 3, 20],
       },
     ],
@@ -82,7 +83,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">仪表板</h1>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -90,10 +91,10 @@ const Dashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>
               <CardTitle className="text-xl">
-                {isProfileLoading ? "Loading..." : `Welcome, ${userProfile.name.split(' ')[0]}`}
+                {isProfileLoading ? "加载中..." : `欢迎，${userProfile.name.split(' ')[0]}`}
               </CardTitle>
               <CardDescription>
-                Here's what's happening in your research group
+                这是您研究小组的最新动态
               </CardDescription>
             </div>
             <Button variant="ghost" size="icon">
@@ -118,7 +119,7 @@ const Dashboard = () => {
             </div>
 
             <div>
-              <h3 className="font-medium mb-3">Your Contributions</h3>
+              <h3 className="font-medium mb-3">您的贡献</h3>
               <ActivityHeatmap />
             </div>
           </CardContent>
@@ -126,8 +127,8 @@ const Dashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Recent Activity</CardTitle>
-            <CardDescription>Latest updates from the team</CardDescription>
+            <CardTitle className="text-xl">最近活动</CardTitle>
+            <CardDescription>来自团队的最新更新</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="flex items-start gap-3">
@@ -135,8 +136,8 @@ const Dashboard = () => {
                 <FileText className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium">Marie uploaded a weekly report</p>
-                <p className="text-xs text-muted-foreground">2 hours ago</p>
+                <p className="text-sm font-medium">Marie 上传了一份周报</p>
+                <p className="text-xs text-muted-foreground">2小时前</p>
               </div>
             </div>
 
@@ -145,8 +146,8 @@ const Dashboard = () => {
                 <Book className="h-4 w-4 text-accent" />
               </div>
               <div>
-                <p className="text-sm font-medium">Alex added 3 papers to the library</p>
-                <p className="text-xs text-muted-foreground">Yesterday</p>
+                <p className="text-sm font-medium">Alex 添加了3篇论文到文献库</p>
+                <p className="text-xs text-muted-foreground">昨天</p>
               </div>
             </div>
 
@@ -155,8 +156,8 @@ const Dashboard = () => {
                 <Wrench className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium">New AI tool added: "Image Segmentation API"</p>
-                <p className="text-xs text-muted-foreground">3 days ago</p>
+                <p className="text-sm font-medium">新AI工具已添加："图像分割API"</p>
+                <p className="text-xs text-muted-foreground">3天前</p>
               </div>
             </div>
 
@@ -165,8 +166,8 @@ const Dashboard = () => {
                 <User className="h-4 w-4 text-accent" />
               </div>
               <div>
-                <p className="text-sm font-medium">Robin joined the research group</p>
-                <p className="text-xs text-muted-foreground">1 week ago</p>
+                <p className="text-sm font-medium">Robin 加入了研究小组</p>
+                <p className="text-xs text-muted-foreground">1周前</p>
               </div>
             </div>
           </CardContent>
@@ -175,47 +176,47 @@ const Dashboard = () => {
 
       <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="overview">Research Overview</TabsTrigger>
-          <TabsTrigger value="reports">Recent Reports</TabsTrigger>
-          <TabsTrigger value="literature">Literature Updates</TabsTrigger>
+          <TabsTrigger value="overview">研究概览</TabsTrigger>
+          <TabsTrigger value="reports">最近报告</TabsTrigger>
+          <TabsTrigger value="literature">文献更新</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Weekly Reports</CardTitle>
+                <CardTitle className="text-sm font-medium">周报</CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground">+2 from last month</p>
+                <p className="text-xs text-muted-foreground">比上月增加2份</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Papers Added</CardTitle>
+                <CardTitle className="text-sm font-medium">添加的论文</CardTitle>
                 <Book className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">28</div>
-                <p className="text-xs text-muted-foreground">+8 since last month</p>
+                <p className="text-xs text-muted-foreground">自上月以来增加8篇</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Discussions</CardTitle>
+                <CardTitle className="text-sm font-medium">活跃讨论</CardTitle>
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">7</div>
-                <p className="text-xs text-muted-foreground">+1 new thread today</p>
+                <p className="text-xs text-muted-foreground">今天新增1个讨论</p>
               </CardContent>
             </Card>
           </div>
           <Card className="col-span-3">
             <CardHeader>
-              <CardTitle>Research Output Breakdown</CardTitle>
+              <CardTitle>研究成果分布</CardTitle>
             </CardHeader>
             <CardContent className="pl-2">
               <BarChart
@@ -230,13 +231,13 @@ const Dashboard = () => {
         <TabsContent value="reports" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Reports</CardTitle>
+              <CardTitle>最近报告</CardTitle>
               <CardDescription>
-                The latest research reports from your team
+                团队的最新研究报告
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {["Weekly Progress on NLP Model", "Computer Vision Research Update", "Collaborative Research Results", "Model Performance Analysis"].map((report, i) => (
+              {["NLP模型的每周进展", "计算机视觉研究更新", "协作研究结果", "模型性能分析"].map((report, i) => (
                 <div key={i} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
                   <div className="flex items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
@@ -245,12 +246,12 @@ const Dashboard = () => {
                     <div>
                       <p className="text-sm font-medium">{report}</p>
                       <p className="text-xs text-muted-foreground">
-                        {["Marie Chen", "Alex Jordan", "Team Collaboration", "Robin Taylor"][i]} • {["2 hours ago", "1 day ago", "2 days ago", "1 week ago"][i]}
+                        {["Marie Chen", "Alex Jordan", "团队协作", "Robin Taylor"][i]} • {["2小时前", "1天前", "2天前", "1周前"][i]}
                       </p>
                     </div>
                   </div>
                   <Button variant="ghost" size="sm">
-                    View
+                    查看
                   </Button>
                 </div>
               ))}
@@ -261,17 +262,17 @@ const Dashboard = () => {
         <TabsContent value="literature" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Literature Updates</CardTitle>
+              <CardTitle>文献更新</CardTitle>
               <CardDescription>
-                Recently added papers and research literature
+                最近添加的论文和研究文献
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                "Advances in Transformer Architectures for Vision Tasks",
-                "Survey of Reinforcement Learning in Robotic Applications",
-                "Recent Progress in Self-supervised Learning",
-                "Multi-modal Foundation Models: A Comprehensive Survey"
+                "视觉任务中Transformer架构的进展",
+                "机器人应用中强化学习的调查",
+                "自监督学习的最新进展",
+                "多模态基础模型：综合调查"
               ].map((paper, i) => (
                 <div key={i} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
                   <div className="flex items-center gap-3">
@@ -281,12 +282,12 @@ const Dashboard = () => {
                     <div>
                       <p className="text-sm font-medium">{paper}</p>
                       <p className="text-xs text-muted-foreground">
-                        Added by {["Alex", "Marie", "Robin", "David"][i]} • {i === 0 ? "Today" : ["3 days ago", "1 week ago", "2 weeks ago"][i-1]}
+                        由 {["Alex", "Marie", "Robin", "David"][i]} 添加 • {i === 0 ? "今天" : ["3天前", "1周前", "2周前"][i-1]}
                       </p>
                     </div>
                   </div>
                   <Button variant="ghost" size="sm">
-                    View
+                    查看
                   </Button>
                 </div>
               ))}

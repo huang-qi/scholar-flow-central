@@ -50,8 +50,8 @@ const AddNews = () => {
     
     if (!newsData.title.trim() || !newsData.content.trim() || !newsData.type) {
       toast({
-        title: "Missing information",
-        description: "Please fill in all required fields.",
+        title: "信息缺失",
+        description: "请填写所有必填字段。",
         variant: "destructive"
       });
       return;
@@ -60,7 +60,7 @@ const AddNews = () => {
     setIsSubmitting(true);
     
     try {
-      // Create the news item
+      // 创建新闻条目
       const newNewsItem = {
         id: uuidv4(),
         title: newsData.title,
@@ -75,21 +75,21 @@ const AddNews = () => {
         saved: false
       };
       
-      // Store in localStorage
+      // 存储到localStorage
       const existingNews = JSON.parse(localStorage.getItem('news') || '[]');
-      existingNews.unshift(newNewsItem); // Add to beginning of array
+      existingNews.unshift(newNewsItem); // 添加到数组开头
       localStorage.setItem('news', JSON.stringify(existingNews));
       
       toast({
-        title: "Success",
-        description: "News item added successfully",
+        title: "成功",
+        description: "新闻条目添加成功",
       });
       navigate("/news");
     } catch (error) {
-      console.error("Error adding news:", error);
+      console.error("添加新闻时出错:", error);
       toast({
-        title: "Failed to add news",
-        description: "An error occurred. Please try again.",
+        title: "添加新闻失败",
+        description: "发生错误。请重试。",
         variant: "destructive"
       });
     } finally {
@@ -100,21 +100,21 @@ const AddNews = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Add News & Update</h1>
+        <h1 className="text-3xl font-bold tracking-tight">添加新闻与更新</h1>
       </div>
 
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>Create News Item</CardTitle>
+            <CardTitle>创建新闻条目</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">标题</Label>
               <Input 
                 id="title" 
                 name="title" 
-                placeholder="Enter title" 
+                placeholder="输入标题" 
                 value={newsData.title}
                 onChange={handleInputChange}
                 required 
@@ -122,11 +122,11 @@ const AddNews = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="content">Content</Label>
+              <Label htmlFor="content">内容</Label>
               <Textarea
                 id="content"
                 name="content"
-                placeholder="Enter news content..."
+                placeholder="输入新闻内容..."
                 rows={6}
                 value={newsData.content}
                 onChange={handleInputChange}
@@ -136,20 +136,20 @@ const AddNews = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="type">Type</Label>
+                <Label htmlFor="type">类型</Label>
                 <Select 
                   value={newsData.type} 
                   onValueChange={handleSelectChange} 
                   required
                 >
                   <SelectTrigger id="type">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue placeholder="选择类型" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="announcement">Announcement</SelectItem>
-                    <SelectItem value="update">Update</SelectItem>
-                    <SelectItem value="event">Event</SelectItem>
-                    <SelectItem value="achievement">Achievement</SelectItem>
+                    <SelectItem value="announcement">公告</SelectItem>
+                    <SelectItem value="update">更新</SelectItem>
+                    <SelectItem value="event">活动</SelectItem>
+                    <SelectItem value="achievement">成就</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -161,17 +161,17 @@ const AddNews = () => {
                   onCheckedChange={handleCheckboxChange}
                 />
                 <Label htmlFor="important" className="font-medium cursor-pointer">
-                  Mark as Important
+                  标记为重要
                 </Label>
               </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button type="button" variant="outline" onClick={() => navigate("/news")}>
-              Cancel
+              取消
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add News"}
+              {isSubmitting ? "添加中..." : "添加新闻"}
             </Button>
           </CardFooter>
         </form>

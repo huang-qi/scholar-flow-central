@@ -25,10 +25,10 @@ const ToolLibrary = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Tool Library</h1>
+        <h1 className="text-3xl font-bold tracking-tight">工具库</h1>
         <Button onClick={() => navigate("/add-tool")}>
           <Plus className="mr-1 h-4 w-4" />
-          Add Tool
+          添加工具
         </Button>
       </div>
 
@@ -62,12 +62,12 @@ const ToolLibrary = () => {
       ) : error ? (
         <Card className="border-destructive">
           <CardHeader>
-            <CardTitle className="text-destructive">Error Loading Tools</CardTitle>
+            <CardTitle className="text-destructive">加载工具时出错</CardTitle>
             <CardDescription>{error}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="outline" onClick={() => window.location.reload()}>
-              Try Again
+              重试
             </Button>
           </CardContent>
         </Card>
