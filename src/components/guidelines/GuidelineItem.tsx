@@ -1,9 +1,9 @@
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import DeleteButton from "@/components/DeleteButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Eye } from "lucide-react";
-import DeleteButton from "@/components/DeleteButton";
 
 export interface GuidelineDocument {
   id: string;
@@ -26,10 +26,10 @@ const GuidelineItem = ({ guideline, onDelete }: GuidelineItemProps) => {
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg">{guideline.title}</CardTitle>
-          <Badge variant="outline">v{guideline.version}</Badge>
+          <Badge variant="outline">版本 {guideline.version}</Badge>
         </div>
         <CardDescription>
-          Updated: {new Date(guideline.lastUpdated).toLocaleDateString()}
+          更新时间：{new Date(guideline.lastUpdated).toLocaleDateString()}
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-3">
@@ -37,22 +37,22 @@ const GuidelineItem = ({ guideline, onDelete }: GuidelineItemProps) => {
           {guideline.description}
         </p>
         <div className="text-xs text-muted-foreground">
-          File: {guideline.fileName}
+          文件：{guideline.fileName}
         </div>
       </CardContent>
       <CardFooter className="justify-end">
         <div className="flex gap-2">
           <Button size="sm" variant="outline">
             <Download className="h-4 w-4 mr-1" />
-            Download
+            下载
           </Button>
           <Button size="sm">
             <Eye className="h-4 w-4 mr-1" />
-            View
+            查看
           </Button>
           <DeleteButton 
             id={guideline.id} 
-            itemName="Guideline" 
+            itemName="指南" 
             tableName="guidelines"
             onDelete={onDelete}
           />

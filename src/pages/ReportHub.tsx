@@ -28,7 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import ReportItem from "@/components/reports/ReportItem";
 import { useAppContext } from "@/context/AppContext";
 
-const reportTypes = ["Individual", "Internal Group", "Collaborative"];
+const reportTypes = ["个人", "内部团队", "合作"];
 
 const ReportHub = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,10 +50,10 @@ const ReportHub = () => {
       
       setReports(data || []);
     } catch (error) {
-      console.error('Error fetching reports:', error);
+      console.error('获取报告时出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to load reports. Please try again.",
+        title: "错误",
+        description: "加载报告失败。请重试。",
         variant: "destructive",
       });
     } finally {
@@ -70,13 +70,13 @@ const ReportHub = () => {
   };
 
   const filteredReports = reports.filter(report => {
-    // Filter by search query
+    // 按搜索关键词过滤
     const matchesSearch = !searchQuery || 
       report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       report.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (report.keywords && report.keywords.some((k: string) => k.toLowerCase().includes(searchQuery.toLowerCase())));
     
-    // Filter by type
+    // 按类型过滤
     const matchesType = !selectedType || report.type === selectedType;
     
     return matchesSearch && matchesType;
@@ -85,10 +85,10 @@ const ReportHub = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Report Hub</h1>
+        <h1 className="text-3xl font-bold tracking-tight">报告中心</h1>
         <Button onClick={() => navigate("/add-report")}>
           <Upload className="h-4 w-4 mr-2" />
-          Upload Report
+          上传报告
         </Button>
       </div>
 
@@ -97,7 +97,7 @@ const ReportHub = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input 
-              placeholder="Search reports..." 
+              placeholder="搜索报告..." 
               className="pl-9"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -108,11 +108,11 @@ const ReportHub = () => {
               <SelectTrigger className="w-[180px]">
                 <div className="flex items-center">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Filter by type" />
+                  <SelectValue placeholder="按类型筛选" />
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="all">所有类型</SelectItem>
                 {reportTypes.map(type => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
@@ -122,16 +122,16 @@ const ReportHub = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
                   <Calendar className="h-4 w-4 mr-2" />
-                  Date
+                  日期
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filter by date</DropdownMenuLabel>
+                <DropdownMenuLabel>按日期筛选</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>This week</DropdownMenuItem>
-                <DropdownMenuItem>This month</DropdownMenuItem>
-                <DropdownMenuItem>Last 3 months</DropdownMenuItem>
-                <DropdownMenuItem>Custom range</DropdownMenuItem>
+                <DropdownMenuItem>本周</DropdownMenuItem>
+                <DropdownMenuItem>本月</DropdownMenuItem>
+                <DropdownMenuItem>最近3个月</DropdownMenuItem>
+                <DropdownMenuItem>自定义范围</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -139,10 +139,10 @@ const ReportHub = () => {
 
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="all">All Reports</TabsTrigger>
-            <TabsTrigger value="my">My Reports</TabsTrigger>
-            <TabsTrigger value="recent">Recently Viewed</TabsTrigger>
-            <TabsTrigger value="saved">Saved</TabsTrigger>
+            <TabsTrigger value="all">所有报告</TabsTrigger>
+            <TabsTrigger value="my">我的报告</TabsTrigger>
+            <TabsTrigger value="recent">最近查看</TabsTrigger>
+            <TabsTrigger value="saved">已保存</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="space-y-4">
             {isLoading ? (
@@ -170,9 +170,9 @@ const ReportHub = () => {
             ) : (
               <div className="text-center py-12">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium">No reports found</h3>
+                <h3 className="text-lg font-medium">未找到报告</h3>
                 <p className="text-sm text-muted-foreground">
-                  Try adjusting your search or filter criteria
+                  请尝试调整搜索或筛选条件
                 </p>
               </div>
             )}

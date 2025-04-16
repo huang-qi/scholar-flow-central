@@ -1,10 +1,10 @@
 
-import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { 
-  BarChart2, Book, FileText, Inbox, 
+import {
+  BarChart2, Book, FileText, Inbox,
   Info, LayoutDashboard, Settings, Wrench
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 interface SideNavigationProps {
   collapsed: boolean;
@@ -12,37 +12,37 @@ interface SideNavigationProps {
 
 const navItems = [
   {
-    title: "Dashboard",
+    title: "个人主页",
     icon: LayoutDashboard,
     path: "/dashboard",
   },
   {
-    title: "Report Hub",
+    title: "报告中心",
     icon: FileText,
     path: "/reports",
   },
   {
-    title: "Literature",
+    title: "文献管理",
     icon: Book,
     path: "/literature",
   },
   {
-    title: "Research Outputs",
+    title: "研究成果",
     icon: BarChart2,
     path: "/research",
   },
   {
-    title: "AI Tool Library",
+    title: "AI工具库",
     icon: Wrench,
     path: "/tools",
   },
   {
-    title: "Guidelines",
+    title: "指南与规范",
     icon: Info,
     path: "/guidelines",
   },
   {
-    title: "News & Updates",
+    title: "新闻与更新",
     icon: Inbox,
     path: "/news",
   },
@@ -86,7 +86,7 @@ export function SideNavigation({ collapsed }: SideNavigationProps) {
             }
           >
             <Settings className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-            {!collapsed && <span>Settings</span>}
+            {!collapsed && <span>设置</span>}
           </NavLink>
         </div>
       </nav>

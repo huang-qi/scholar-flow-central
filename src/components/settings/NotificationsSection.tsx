@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Define types for notifications
+// 定义通知类型
 type NotificationType = 'researchUpdates' | 'systemAnnouncements' | 'newPublications';
 type NotificationCategory = 'email' | 'push';
 
@@ -43,8 +43,8 @@ export function NotificationsSection() {
 
   const handleSavePreferences = () => {
     toast({
-      title: "Preferences saved",
-      description: "Your notification preferences have been updated.",
+      title: "设置已保存",
+      description: "您的通知偏好设置已更新。",
     });
   };
 
@@ -54,9 +54,9 @@ export function NotificationsSection() {
         <CardHeader className="flex flex-row items-center gap-2">
           <Bell className="h-5 w-5" />
           <div>
-            <CardTitle>Email Notifications</CardTitle>
+            <CardTitle>邮件通知</CardTitle>
             <CardDescription>
-              Choose what emails you want to receive.
+              选择您想要接收的邮件。
             </CardDescription>
           </div>
         </CardHeader>
@@ -68,7 +68,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('email', 'researchUpdates')}
             />
             <Label htmlFor="emailResearchUpdates" className="cursor-pointer">
-              Research updates and reports
+              研究更新和报告
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -78,7 +78,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('email', 'systemAnnouncements')}
             />
             <Label htmlFor="emailSystemAnnouncements" className="cursor-pointer">
-              System announcements
+              系统公告
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -88,7 +88,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('email', 'newPublications')}
             />
             <Label htmlFor="emailNewPublications" className="cursor-pointer">
-              New publication alerts
+              新发布提醒
             </Label>
           </div>
         </CardContent>
@@ -96,9 +96,9 @@ export function NotificationsSection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Push Notifications</CardTitle>
+          <CardTitle>推送通知</CardTitle>
           <CardDescription>
-            Configure notifications sent to your browser or mobile app.
+            配置发送到您的浏览器或移动应用的通知。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -109,7 +109,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('push', 'researchUpdates')}
             />
             <Label htmlFor="pushResearchUpdates" className="cursor-pointer">
-              Research updates and reports
+              研究更新和报告
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -119,7 +119,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('push', 'systemAnnouncements')}
             />
             <Label htmlFor="pushSystemAnnouncements" className="cursor-pointer">
-              System announcements
+              系统公告
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -129,12 +129,12 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('push', 'newPublications')}
             />
             <Label htmlFor="pushNewPublications" className="cursor-pointer">
-              New publication alerts
+              新发布提醒
             </Label>
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={handleSavePreferences}>Save Preferences</Button>
+          <Button onClick={handleSavePreferences}>保存设置</Button>
         </CardFooter>
       </Card>
     </div>

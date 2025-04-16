@@ -1,9 +1,5 @@
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Search, Upload, FileText } from "lucide-react";
+import GuidelineItem from "@/components/guidelines/GuidelineItem";
 import {
   Accordion,
   AccordionContent,
@@ -11,10 +7,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import GuidelineItem from "@/components/guidelines/GuidelineItem";
+import { supabase } from "@/integrations/supabase/client";
+import { FileText, Search, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Guidelines = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,7 +26,7 @@ const Guidelines = () => {
   const fetchGuidelines = async () => {
     try {
       setIsLoading(true);
-      // First check local storage for guidelines
+      // 首先检查本地存储中的指南
       const localGuidelines = localStorage.getItem('guidelines');
       let guidelineData: any[] = [];
       
@@ -34,14 +34,14 @@ const Guidelines = () => {
         guidelineData = JSON.parse(localGuidelines);
       }
       
-      // Now try to get data from Supabase
+      // 现在尝试从 Supabase 获取数据
       try {
         const { data, error } = await supabase
           .from('guidelines')
           .select('*');
         
         if (data && data.length > 0) {
-          // Format the data to match our component's expected format
+          // 格式化数据以匹配组件的预期格式
           const formattedGuidelines = data.map(item => ({
             id: item.id,
             title: item.title,
@@ -52,59 +52,59 @@ const Guidelines = () => {
             fileName: `${item.title.toLowerCase().replace(/\s+/g, '_')}.pdf`
           }));
           
-          // Add Supabase guidelines to our local guidelines
+          // 将 Supabase 指南添加到本地指南中
           guidelineData = [...formattedGuidelines, ...guidelineData];
         }
       } catch (error) {
-        console.error("Supabase fetch error:", error);
-        // Continue with local data only
+        console.error("Supabase 获取错误:", error);
+        // 仅继续使用本地数据
       }
       
       if (guidelineData.length === 0) {
-        // Use sample data if no data in database or local storage
+        // 如果数据库或本地存储中没有数据，则使用示例数据
         const sampleGuidelines = [
           {
             id: "1",
-            title: "Research Paper Submission Guidelines",
-            category: "Manuscript Submission",
+            title: "研究论文提交指南",
+            category: "论文提交",
             version: "2.3",
             lastUpdated: "2025-02-15",
-            description: "Standard procedures for submitting papers to conferences and journals",
+            description: "向会议和期刊提交论文的标准程序",
             fileName: "paper_submission_guidelines.pdf"
           },
           {
             id: "2",
-            title: "Code Repository Standards",
-            category: "Code Management",
+            title: "代码仓库标准",
+            category: "代码管理",
             version: "1.5",
             lastUpdated: "2025-03-10",
-            description: "Guidelines for organizing and documenting code repositories",
+            description: "组织和记录代码仓库的指南",
             fileName: "code_repository_standards.pdf"
           },
           {
             id: "3",
-            title: "Weekly Report Template",
-            category: "Reporting",
+            title: "周报模板",
+            category: "报告",
             version: "3.1",
             lastUpdated: "2025-04-01",
-            description: "Template and instructions for weekly research progress reports",
+            description: "每周研究进展报告的模板和说明",
             fileName: "weekly_report_template.docx"
           }
         ];
         guidelineData = sampleGuidelines;
       }
       
-      // Remove duplicates by id
+      // 按 id 删除重复项
       const uniqueGuidelines = Array.from(
         new Map(guidelineData.map(item => [item.id, item])).values()
       );
       
       setGuidelines(uniqueGuidelines);
     } catch (error) {
-      console.error('Error fetching guidelines:', error);
+      console.error('获取指南时出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to load guidelines. Please try again.",
+        title: "错误",
+        description: "加载指南失败。请重试。",
         variant: "destructive",
       });
     } finally {
@@ -120,7 +120,7 @@ const Guidelines = () => {
     fetchGuidelines();
   };
 
-  // Filter guidelines based on search query
+  // 根据搜索查询过滤指南
   const filteredGuidelines = guidelines.filter(guideline =>
     guideline.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     guideline.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -146,10 +146,10 @@ const Guidelines = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Guidelines & Policies</h1>
+        <h1 className="text-3xl font-bold tracking-tight">指南与规范</h1>
         <Button onClick={() => navigate("/add-guideline")}>
           <Upload className="h-4 w-4 mr-2" />
-          Add Guidelines
+          添加指南
         </Button>
       </div>
 
@@ -157,7 +157,7 @@ const Guidelines = () => {
         <div className="relative max-w-md mx-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input 
-            placeholder="Search guidelines..." 
+            placeholder="搜索指南..." 
             className="pl-9"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -191,9 +191,9 @@ const Guidelines = () => {
             ) : (
               <div className="text-center py-12">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium">No guidelines found</h3>
+                <h3 className="text-lg font-medium">未找到指南</h3>
                 <p className="text-sm text-muted-foreground">
-                  Try adjusting your search query
+                  请尝试调整搜索条件
                 </p>
               </div>
             )

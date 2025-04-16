@@ -31,7 +31,8 @@ const ReportItem = ({ report, onReportDeleted }: ReportItemProps) => {
           <Badge variant={
             report.type === "Individual" ? "outline" : 
             report.type === "Internal Group" ? "secondary" : "default"
-          }>{report.type}</Badge>
+          }>{report.type === "Individual" ? "个人" : 
+              report.type === "Internal Group" ? "内部团队" : report.type}</Badge>
         </div>
         <CardDescription className="flex items-center gap-2">
           <span>{report.author}</span>
@@ -62,15 +63,15 @@ const ReportItem = ({ report, onReportDeleted }: ReportItemProps) => {
         <div className="flex gap-2">
           <Button size="sm" variant="ghost">
             <Download className="h-4 w-4 mr-1" />
-            Download
+            下载
           </Button>
           <Button size="sm">
             <Eye className="h-4 w-4 mr-1" />
-            View
+            查看
           </Button>
           <DeleteButton 
             id={report.id} 
-            itemName="Report" 
+            itemName="报告" 
             tableName="reports"
             onDelete={onReportDeleted}
           />

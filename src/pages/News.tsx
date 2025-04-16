@@ -29,7 +29,7 @@ const News = () => {
     try {
       setIsLoading(true);
       
-      // Check localStorage first
+      // 首先检查本地存储
       const storedNews = localStorage.getItem('news');
       if (storedNews) {
         const parsedNews = JSON.parse(storedNews);
@@ -39,14 +39,14 @@ const News = () => {
         return;
       }
       
-      // If no local storage, use sample data
+      // 如果没有本地存储，使用示例数据
       const sampleNews = [
         {
           id: '1',
-          title: "New Research Grant Approved",
-          content: "Our research group has been awarded a $1.5M grant for the project 'Advanced ML Techniques for Healthcare Applications'. This grant will fund our research for the next 3 years.",
-          author: "Dr. David Bennett",
-          authorRole: "Principal Investigator",
+          title: "新研究经费获批",
+          content: "我们的研究团队获得了150万美元的项目经费，用于'医疗保健应用中的高级机器学习技术'项目。这笔经费将资助我们未来3年的研究。",
+          author: "David Bennett博士",
+          authorRole: "首席研究员",
           date: "2025-04-05",
           type: "announcement",
           important: true,
@@ -55,10 +55,10 @@ const News = () => {
         },
         {
           id: '2',
-          title: "Weekly Meeting Change",
-          content: "Starting next week, our regular group meetings will be moved to Thursdays at 2:00 PM instead of Fridays. This change accommodates the new semester schedule.",
-          author: "Marie Chen",
-          authorRole: "Research Coordinator",
+          title: "每周会议时间变更",
+          content: "从下周开始，我们的例行小组会议将从周五改到周四下午2:00。这一变更是为了适应新学期的时间安排。",
+          author: "陈玛丽",
+          authorRole: "研究协调员",
           date: "2025-04-04",
           type: "update",
           important: true,
@@ -67,10 +67,10 @@ const News = () => {
         },
         {
           id: '3',
-          title: "Paper Accepted at NeurIPS 2025",
-          content: "Our paper 'Self-Supervised Learning in Dynamic Systems' has been accepted for presentation at NeurIPS 2025. Congratulations to all authors!",
+          title: "论文被NeurIPS 2025接收",
+          content: "我们的论文'动态系统中的自监督学习'已被接收并将在NeurIPS 2025会议上展示。恭喜所有作者！",
           author: "Alex Jordan",
-          authorRole: "Senior Researcher",
+          authorRole: "高级研究员",
           date: "2025-04-02",
           type: "achievement",
           read: true,
@@ -81,13 +81,13 @@ const News = () => {
       setNews(sampleNews);
       setSavedNews(new Set(sampleNews.filter(n => n.saved).map(n => n.id)));
       
-      // Save to localStorage for future use
+      // 保存到本地存储以供将来使用
       localStorage.setItem('news', JSON.stringify(sampleNews));
     } catch (error) {
-      console.error('Error fetching news:', error);
+      console.error('获取新闻时出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to load news. Please try again.",
+        title: "错误",
+        description: "加载新闻失败。请重试。",
         variant: "destructive",
       });
     } finally {
@@ -111,7 +111,7 @@ const News = () => {
     
     setSavedNews(newSavedSet);
     
-    // Update in localStorage instead of database
+    // 更新本地存储而不是数据库
     const updatedNews = news.map(item => {
       if (item.id === id) {
         return { ...item, saved: !isSaved };
@@ -128,7 +128,7 @@ const News = () => {
     setNews(updatedNews);
     localStorage.setItem('news', JSON.stringify(updatedNews));
     
-    // Update saved set if needed
+    // 如果需要，更新已保存集合
     if (savedNews.has(id)) {
       const newSavedSet = new Set(savedNews);
       newSavedSet.delete(id);
@@ -153,10 +153,10 @@ const News = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">News & Updates</h1>
+        <h1 className="text-3xl font-bold tracking-tight">新闻与更新</h1>
         <Button onClick={() => navigate("/add-news")}>
           <Plus className="h-4 w-4 mr-2" />
-          Add News & Updates
+          添加新闻与更新
         </Button>
       </div>
 
@@ -165,7 +165,7 @@ const News = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input 
-              placeholder="Search news..." 
+              placeholder="搜索新闻..." 
               className="pl-9"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -176,15 +176,15 @@ const News = () => {
               <SelectTrigger className="w-[180px]">
                 <div className="flex items-center">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Filter by type" />
+                  <SelectValue placeholder="按类型筛选" />
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="announcement">Announcements</SelectItem>
-                <SelectItem value="update">Updates</SelectItem>
-                <SelectItem value="event">Events</SelectItem>
-                <SelectItem value="achievement">Achievements</SelectItem>
+                <SelectItem value="all">所有类型</SelectItem>
+                <SelectItem value="announcement">公告</SelectItem>
+                <SelectItem value="update">更新</SelectItem>
+                <SelectItem value="event">活动</SelectItem>
+                <SelectItem value="achievement">成就</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -192,10 +192,10 @@ const News = () => {
 
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="all">All News</TabsTrigger>
-            <TabsTrigger value="unread">Unread</TabsTrigger>
-            <TabsTrigger value="important">Important</TabsTrigger>
-            <TabsTrigger value="saved">Saved</TabsTrigger>
+            <TabsTrigger value="all">全部新闻</TabsTrigger>
+            <TabsTrigger value="unread">未读</TabsTrigger>
+            <TabsTrigger value="important">重要</TabsTrigger>
+            <TabsTrigger value="saved">已保存</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
@@ -221,9 +221,9 @@ const News = () => {
               ) : (
                 <div className="text-center py-12">
                   <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">No news found</h3>
+                  <h3 className="text-lg font-medium">未找到新闻</h3>
                   <p className="text-sm text-muted-foreground">
-                    Try adjusting your search or filter criteria
+                    请尝试调整搜索或筛选条件
                   </p>
                 </div>
               )}

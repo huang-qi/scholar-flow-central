@@ -1,9 +1,8 @@
-
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import DeleteButton from "@/components/DeleteButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Bookmark, BookmarkCheck, FileEdit, Star } from "lucide-react";
-import DeleteButton from "@/components/DeleteButton";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bookmark, BookmarkCheck, ExternalLink, FileEdit, Star } from "lucide-react";
 
 export interface Publication {
   id: string;
@@ -15,7 +14,7 @@ export interface Publication {
   tags: string[];
   rating: number;
   notes: boolean;
-  saved?: boolean; // Added this property
+  saved?: boolean; // 添加此属性
 }
 
 interface PublicationCardProps {
@@ -34,7 +33,7 @@ const PublicationCard = ({ publication, onDelete, onToggleSaved }: PublicationCa
           <div>
             <CardTitle className="text-lg">{title}</CardTitle>
             <CardDescription>
-              {authors.join(", ")} • {year}
+              {authors.join("、")} • {year}
             </CardDescription>
           </div>
           <div className="flex gap-1">
@@ -43,7 +42,7 @@ const PublicationCard = ({ publication, onDelete, onToggleSaved }: PublicationCa
                 variant="ghost" 
                 size="icon"
                 onClick={() => onToggleSaved(id)}
-                title={publication.saved ? "Unsave" : "Save"}
+                title={publication.saved ? "取消收藏" : "收藏"}
               >
                 {publication.saved ? (
                   <BookmarkCheck className="h-5 w-5 text-primary" />
@@ -54,7 +53,7 @@ const PublicationCard = ({ publication, onDelete, onToggleSaved }: PublicationCa
             )}
             <DeleteButton 
               id={id} 
-              itemName="Publication" 
+              itemName="文献" 
               tableName="literature" 
               onDelete={() => onDelete(id)}
             />
@@ -85,12 +84,12 @@ const PublicationCard = ({ publication, onDelete, onToggleSaved }: PublicationCa
           {notes && (
             <Button size="sm" variant="outline">
               <FileEdit className="h-4 w-4 mr-1" />
-              Notes
+              笔记
             </Button>
           )}
           <Button size="sm">
             <ExternalLink className="h-4 w-4 mr-1" />
-            View
+            查看
           </Button>
         </div>
       </CardFooter>

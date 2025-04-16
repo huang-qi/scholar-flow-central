@@ -24,12 +24,12 @@ export function SecuritySection() {
   };
 
   const handleChangePassword = () => {
-    // Validation would go here
+    // 这里会进行验证
     if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Please fill out all password fields.",
+        title: "错误",
+        description: "请填写所有密码字段。",
       });
       return;
     }
@@ -37,19 +37,19 @@ export function SecuritySection() {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "New passwords don't match.",
+        title: "错误",
+        description: "新密码不匹配。",
       });
       return;
     }
 
-    // In a real app, this would update the password
+    // 在实际应用中，这里会更新密码
     toast({
-      title: "Password updated",
-      description: "Your password has been changed successfully.",
+      title: "密码已更新",
+      description: "您的密码已成功更改。",
     });
     
-    // Reset fields
+    // 重置字段
     setPasswordData({
       currentPassword: "",
       newPassword: "",
@@ -61,8 +61,8 @@ export function SecuritySection() {
     setTwoFactorEnabled(!twoFactorEnabled);
     
     toast({
-      title: `Two-factor authentication ${!twoFactorEnabled ? 'enabled' : 'disabled'}`,
-      description: `Two-factor authentication has been ${!twoFactorEnabled ? 'enabled' : 'disabled'} for your account.`,
+      title: `双重认证已${!twoFactorEnabled ? '启用' : '禁用'}`,
+      description: `您的账户的双重认证已${!twoFactorEnabled ? '启用' : '禁用'}。`,
     });
   };
 
@@ -72,15 +72,15 @@ export function SecuritySection() {
         <CardHeader className="flex flex-row items-center gap-2">
           <Key className="h-5 w-5" />
           <div>
-            <CardTitle>Change Password</CardTitle>
+            <CardTitle>更改密码</CardTitle>
             <CardDescription>
-              Update your password to keep your account secure.
+              更新您的密码以确保账户安全。
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
+            <Label htmlFor="currentPassword">当前密码</Label>
             <Input 
               id="currentPassword" 
               name="currentPassword"
@@ -90,7 +90,7 @@ export function SecuritySection() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="newPassword">New Password</Label>
+            <Label htmlFor="newPassword">新密码</Label>
             <Input 
               id="newPassword" 
               name="newPassword"
@@ -100,7 +100,7 @@ export function SecuritySection() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Label htmlFor="confirmPassword">确认新密码</Label>
             <Input 
               id="confirmPassword" 
               name="confirmPassword"
@@ -111,7 +111,7 @@ export function SecuritySection() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={handleChangePassword}>Update Password</Button>
+          <Button onClick={handleChangePassword}>更新密码</Button>
         </CardFooter>
       </Card>
 
@@ -119,9 +119,9 @@ export function SecuritySection() {
         <CardHeader className="flex flex-row items-center gap-2">
           <Shield className="h-5 w-5" />
           <div>
-            <CardTitle>Two-Factor Authentication</CardTitle>
+            <CardTitle>双重认证</CardTitle>
             <CardDescription>
-              Add an extra layer of security to your account.
+              为您的账户添加额外的安全层级。
             </CardDescription>
           </div>
         </CardHeader>
@@ -133,7 +133,7 @@ export function SecuritySection() {
               onCheckedChange={handleTwoFactorToggle} 
             />
             <Label htmlFor="twoFactor" className="cursor-pointer">
-              Enable two-factor authentication
+              启用双重认证
             </Label>
           </div>
         </CardContent>

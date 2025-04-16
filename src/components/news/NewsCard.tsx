@@ -45,10 +45,13 @@ const NewsCard = ({ news, toggleSaved, onDelete }: NewsCardProps) => {
         <div className="flex justify-between items-start mb-2">
           <div className="flex gap-2 items-center">
             <Badge className={typeColor + " capitalize"}>
-              {news.type}
+              {news.type === "announcement" ? "公告" :
+               news.type === "update" ? "更新" :
+               news.type === "event" ? "活动" :
+               news.type === "achievement" ? "成就" : news.type}
             </Badge>
             {news.important && (
-              <Badge variant="destructive">Important</Badge>
+              <Badge variant="destructive">重要</Badge>
             )}
           </div>
           <div className="flex gap-1">
@@ -65,7 +68,7 @@ const NewsCard = ({ news, toggleSaved, onDelete }: NewsCardProps) => {
             </Button>
             <DeleteButton 
               id={news.id} 
-              itemName="News Item" 
+              itemName="新闻" 
               tableName="news" 
               onDelete={() => onDelete && onDelete(news.id)}
             />
@@ -99,7 +102,7 @@ const NewsCard = ({ news, toggleSaved, onDelete }: NewsCardProps) => {
           {!news.read && (
             <Button size="sm" variant="ghost">
               <Eye className="h-4 w-4 mr-1" />
-              Mark as read
+              标记为已读
             </Button>
           )}
         </div>

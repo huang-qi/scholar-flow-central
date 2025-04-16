@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -175,7 +174,7 @@ const AddLiterature = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="doi">DOI (数字对象标识符)</Label>
+              <Label htmlFor="doi">DOI（数字对象标识符）</Label>
               <Input 
                 id="doi" 
                 placeholder="例如：10.1000/xyz123" 
@@ -185,7 +184,7 @@ const AddLiterature = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="file">上传 PDF（可选）</Label>
+              <Label htmlFor="file">上传PDF（可选）</Label>
               <Input id="file" type="file" accept=".pdf" />
             </div>
           </CardContent>

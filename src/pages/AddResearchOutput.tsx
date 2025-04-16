@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,10 +41,10 @@ const AddResearchOutput = () => {
     setIsSubmitting(true);
     
     try {
-      // Format date as year
+      // 将日期格式化为年份
       const year = new Date(formData.date).getFullYear();
       
-      // Format the data for Supabase
+      // 为 Supabase 格式化数据
       const { data, error } = await supabase
         .from('research_outputs')
         .insert({
@@ -63,15 +62,15 @@ const AddResearchOutput = () => {
       if (error) throw error;
       
       toast({
-        title: "Success",
-        description: "Research output added successfully",
+        title: "成功",
+        description: "研究成果添加成功",
       });
       navigate("/research");
     } catch (error) {
-      console.error('Error adding research output:', error);
+      console.error('添加研究成果时出错:', error);
       toast({
-        title: "Error",
-        description: "Failed to add research output. Please try again.",
+        title: "错误",
+        description: "添加研究成果失败。请重试。",
         variant: "destructive",
       });
     } finally {
@@ -82,20 +81,20 @@ const AddResearchOutput = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Add Research Output</h1>
+        <h1 className="text-3xl font-bold tracking-tight">添加研究成果</h1>
       </div>
 
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>Output Details</CardTitle>
+            <CardTitle>成果详情</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">标题</Label>
               <Input 
                 id="title" 
-                placeholder="Enter title" 
+                placeholder="输入标题" 
                 required 
                 value={formData.title}
                 onChange={handleChange}
@@ -103,7 +102,7 @@ const AddResearchOutput = () => {
             </div>
             
             <div className="space-y-4">
-              <Label>Output Type</Label>
+              <Label>成果类型</Label>
               <RadioGroup 
                 defaultValue="paper" 
                 className="grid grid-cols-3 gap-4" 
@@ -112,40 +111,40 @@ const AddResearchOutput = () => {
               >
                 <Label htmlFor="paper" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
                   <RadioGroupItem value="paper" id="paper" className="sr-only" />
-                  <span>Academic Paper</span>
+                  <span>学术论文</span>
                 </Label>
                 <Label htmlFor="code" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
                   <RadioGroupItem value="code" id="code" className="sr-only" />
-                  <span>Code Repository</span>
+                  <span>代码仓库</span>
                 </Label>
                 <Label htmlFor="patent" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
                   <RadioGroupItem value="patent" id="patent" className="sr-only" />
-                  <span>Patent</span>
+                  <span>专利</span>
                 </Label>
               </RadioGroup>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">状态</Label>
                 <Select 
                   value={formData.status} 
                   onValueChange={(value) => handleSelectChange("status", value)}
                 >
                   <SelectTrigger id="status">
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder="选择状态" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="submitted">Submitted</SelectItem>
-                    <SelectItem value="review">Under Review</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
+                    <SelectItem value="draft">草稿</SelectItem>
+                    <SelectItem value="submitted">已提交</SelectItem>
+                    <SelectItem value="review">审核中</SelectItem>
+                    <SelectItem value="published">已发表</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date">日期</Label>
                 <Input 
                   id="date" 
                   type="date" 
@@ -156,10 +155,10 @@ const AddResearchOutput = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="authors">Authors/Contributors</Label>
+              <Label htmlFor="authors">作者/贡献者</Label>
               <Input 
                 id="authors" 
-                placeholder="Names separated by commas" 
+                placeholder="姓名用逗号分隔" 
                 required
                 value={formData.authors}
                 onChange={handleChange}
@@ -168,10 +167,10 @@ const AddResearchOutput = () => {
             
             {formData.outputType === 'paper' && (
               <div className="space-y-2">
-                <Label htmlFor="venue">Journal/Conference</Label>
+                <Label htmlFor="venue">期刊/会议</Label>
                 <Input 
                   id="venue" 
-                  placeholder="Where was this published" 
+                  placeholder="发表在哪里" 
                   value={formData.venue}
                   onChange={handleChange}
                 />
@@ -179,10 +178,10 @@ const AddResearchOutput = () => {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="description">Description/Abstract</Label>
+              <Label htmlFor="description">描述/摘要</Label>
               <Textarea 
                 id="description" 
-                placeholder="Describe the research output..." 
+                placeholder="描述研究成果..." 
                 rows={4}
                 value={formData.description}
                 onChange={handleChange}
@@ -190,20 +189,20 @@ const AddResearchOutput = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="link">External Link</Label>
+              <Label htmlFor="link">外部链接</Label>
               <Input 
                 id="link" 
-                placeholder="URL to paper, code repository, or patent" 
+                placeholder="论文、代码仓库或专利的URL" 
                 value={formData.link}
                 onChange={handleChange}
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="tags">Keywords/Tags</Label>
+              <Label htmlFor="tags">关键词/标签</Label>
               <Input 
                 id="tags" 
-                placeholder="Separate tags with commas (e.g., NLP, Machine Learning)" 
+                placeholder="用逗号分隔标签（如：自然语言处理, 机器学习）" 
                 value={formData.tags}
                 onChange={handleChange}
               />
@@ -211,10 +210,10 @@ const AddResearchOutput = () => {
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button type="button" variant="outline" onClick={() => navigate("/research")}>
-              Cancel
+              取消
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add Research Output"}
+              {isSubmitting ? "添加中..." : "添加研究成果"}
             </Button>
           </CardFooter>
         </form>

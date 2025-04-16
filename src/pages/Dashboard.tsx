@@ -1,13 +1,12 @@
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowUpRight, Book, FileText, Wrench, User, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { BarChart } from "@/components/charts/BarChart";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppContext } from "@/context/AppContext";
+import { ArrowUpRight, Book, FileText, MessageSquare, User, Wrench } from "lucide-react";
+import { useState } from "react";
 
 const ActivityHeatmap = () => {
   const generateActivityData = () => {
@@ -34,7 +33,7 @@ const ActivityHeatmap = () => {
 
   return (
     <div className="space-y-3">
-      <div className="text-sm font-medium">活动贡献</div>
+      <div className="text-sm font-medium">过去60天活跃度</div>
       <div className="flex flex-wrap gap-1">
         {activityData.map((day) => (
           <div
@@ -42,14 +41,14 @@ const ActivityHeatmap = () => {
             title={`${day.date}: ${day.level} 项贡献`}
             className={`h-3 w-3 rounded-sm ${
               day.level === 0
-                ? "bg-gray-100"
+                ? "bg-[#ebedf0]"
                 : day.level === 1
-                ? "bg-accent/30"
+                ? "bg-[#9be9a8]" 
                 : day.level === 2
-                ? "bg-accent/50"
+                ? "bg-[#40c463]"
                 : day.level === 3
-                ? "bg-accent/70"
-                : "bg-accent"
+                ? "bg-[#30a14e]"
+                : "bg-[#216e39]"
             }`}
           />
         ))}
@@ -214,7 +213,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
-          <Card className="col-span-3">
+          {/* <Card className="col-span-3 max-w-3xl mx-auto">
             <CardHeader>
               <CardTitle>研究成果分布</CardTitle>
             </CardHeader>
@@ -222,10 +221,10 @@ const Dashboard = () => {
               <BarChart
                 categories={contributionData.categories}
                 series={contributionData.series}
-                height={300}
+                height={200}
               />
             </CardContent>
-          </Card>
+          </Card> */}
         </TabsContent>
         
         <TabsContent value="reports" className="space-y-4">
