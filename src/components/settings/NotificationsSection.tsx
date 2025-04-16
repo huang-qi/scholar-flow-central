@@ -43,8 +43,8 @@ export function NotificationsSection() {
 
   const handleSavePreferences = () => {
     toast({
-      title: "偏好已保存",
-      description: "您的通知偏好设置已更新。",
+      title: "Preferences saved",
+      description: "Your notification preferences have been updated.",
     });
   };
 
@@ -54,9 +54,9 @@ export function NotificationsSection() {
         <CardHeader className="flex flex-row items-center gap-2">
           <Bell className="h-5 w-5" />
           <div>
-            <CardTitle>电子邮件通知</CardTitle>
+            <CardTitle>Email Notifications</CardTitle>
             <CardDescription>
-              选择您想要接收的电子邮件。
+              Choose what emails you want to receive.
             </CardDescription>
           </div>
         </CardHeader>
@@ -68,7 +68,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('email', 'researchUpdates')}
             />
             <Label htmlFor="emailResearchUpdates" className="cursor-pointer">
-              研究更新和报告
+              Research updates and reports
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -78,7 +78,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('email', 'systemAnnouncements')}
             />
             <Label htmlFor="emailSystemAnnouncements" className="cursor-pointer">
-              系统公告
+              System announcements
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -88,7 +88,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('email', 'newPublications')}
             />
             <Label htmlFor="emailNewPublications" className="cursor-pointer">
-              新出版物提醒
+              New publication alerts
             </Label>
           </div>
         </CardContent>
@@ -96,9 +96,9 @@ export function NotificationsSection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>推送通知</CardTitle>
+          <CardTitle>Push Notifications</CardTitle>
           <CardDescription>
-            配置发送到您的浏览器或移动应用的通知。
+            Configure notifications sent to your browser or mobile app.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -109,7 +109,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('push', 'researchUpdates')}
             />
             <Label htmlFor="pushResearchUpdates" className="cursor-pointer">
-              研究更新和报告
+              Research updates and reports
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -119,7 +119,7 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('push', 'systemAnnouncements')}
             />
             <Label htmlFor="pushSystemAnnouncements" className="cursor-pointer">
-              系统公告
+              System announcements
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -129,12 +129,12 @@ export function NotificationsSection() {
               onCheckedChange={() => handleToggleNotification('push', 'newPublications')}
             />
             <Label htmlFor="pushNewPublications" className="cursor-pointer">
-              新出版物提醒
+              New publication alerts
             </Label>
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={handleSavePreferences}>保存偏好设置</Button>
+          <Button onClick={handleSavePreferences}>Save Preferences</Button>
         </CardFooter>
       </Card>
     </div>

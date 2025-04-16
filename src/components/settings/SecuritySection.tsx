@@ -28,8 +28,8 @@ export function SecuritySection() {
     if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
       toast({
         variant: "destructive",
-        title: "错误",
-        description: "请填写所有密码字段。",
+        title: "Error",
+        description: "Please fill out all password fields.",
       });
       return;
     }
@@ -37,16 +37,16 @@ export function SecuritySection() {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast({
         variant: "destructive",
-        title: "错误",
-        description: "新密码不匹配。",
+        title: "Error",
+        description: "New passwords don't match.",
       });
       return;
     }
 
     // In a real app, this would update the password
     toast({
-      title: "密码已更新",
-      description: "您的密码已成功更改。",
+      title: "Password updated",
+      description: "Your password has been changed successfully.",
     });
     
     // Reset fields
@@ -61,8 +61,8 @@ export function SecuritySection() {
     setTwoFactorEnabled(!twoFactorEnabled);
     
     toast({
-      title: `双因素认证已${!twoFactorEnabled ? '启用' : '禁用'}`,
-      description: `您账户的双因素认证已${!twoFactorEnabled ? '启用' : '禁用'}。`,
+      title: `Two-factor authentication ${!twoFactorEnabled ? 'enabled' : 'disabled'}`,
+      description: `Two-factor authentication has been ${!twoFactorEnabled ? 'enabled' : 'disabled'} for your account.`,
     });
   };
 
@@ -72,15 +72,15 @@ export function SecuritySection() {
         <CardHeader className="flex flex-row items-center gap-2">
           <Key className="h-5 w-5" />
           <div>
-            <CardTitle>更改密码</CardTitle>
+            <CardTitle>Change Password</CardTitle>
             <CardDescription>
-              更新您的密码以保持账户安全。
+              Update your password to keep your account secure.
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">当前密码</Label>
+            <Label htmlFor="currentPassword">Current Password</Label>
             <Input 
               id="currentPassword" 
               name="currentPassword"
@@ -90,7 +90,7 @@ export function SecuritySection() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="newPassword">新密码</Label>
+            <Label htmlFor="newPassword">New Password</Label>
             <Input 
               id="newPassword" 
               name="newPassword"
@@ -100,7 +100,7 @@ export function SecuritySection() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">确认新密码</Label>
+            <Label htmlFor="confirmPassword">Confirm New Password</Label>
             <Input 
               id="confirmPassword" 
               name="confirmPassword"
@@ -111,7 +111,7 @@ export function SecuritySection() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={handleChangePassword}>更新密码</Button>
+          <Button onClick={handleChangePassword}>Update Password</Button>
         </CardFooter>
       </Card>
 
@@ -119,9 +119,9 @@ export function SecuritySection() {
         <CardHeader className="flex flex-row items-center gap-2">
           <Shield className="h-5 w-5" />
           <div>
-            <CardTitle>双因素认证</CardTitle>
+            <CardTitle>Two-Factor Authentication</CardTitle>
             <CardDescription>
-              为您的账户添加额外的安全层。
+              Add an extra layer of security to your account.
             </CardDescription>
           </div>
         </CardHeader>
@@ -133,7 +133,7 @@ export function SecuritySection() {
               onCheckedChange={handleTwoFactorToggle} 
             />
             <Label htmlFor="twoFactor" className="cursor-pointer">
-              启用双因素认证
+              Enable two-factor authentication
             </Label>
           </div>
         </CardContent>

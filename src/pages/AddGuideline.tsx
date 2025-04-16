@@ -49,8 +49,8 @@ const AddGuideline = () => {
     
     if (!formData.title || !formData.category || !formData.content) {
       toast({
-        title: "信息缺失",
-        description: "请填写所有必填字段",
+        title: "Missing information",
+        description: "Please fill in all required fields",
         variant: "destructive"
       });
       return;
@@ -82,11 +82,11 @@ const AddGuideline = () => {
           });
           
         if (error) {
-          console.error("保存到数据库时出错:", error);
+          console.error("Error saving to Supabase:", error);
           throw error;
         }
       } catch (error) {
-        console.error("无法保存到数据库，改为保存到localStorage:", error);
+        console.error("Failed to save to database, saving to localStorage instead:", error);
         
         // Fall back to localStorage
         const existingGuidelines = JSON.parse(localStorage.getItem('guidelines') || '[]');
@@ -95,16 +95,16 @@ const AddGuideline = () => {
       }
       
       toast({
-        title: "成功",
-        description: "指南添加成功",
+        title: "Success",
+        description: "Guideline added successfully",
       });
       
       navigate("/guidelines");
     } catch (error) {
-      console.error('添加指南时出错:', error);
+      console.error('Error adding guideline:', error);
       toast({
-        title: "错误",
-        description: "添加指南失败，请重试。",
+        title: "Error",
+        description: "Failed to add guideline. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -115,21 +115,21 @@ const AddGuideline = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">添加指南</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Add Guideline</h1>
       </div>
 
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>指南详情</CardTitle>
+            <CardTitle>Guideline Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">标题</Label>
+              <Label htmlFor="title">Title</Label>
               <Input 
                 id="title" 
                 name="title" 
-                placeholder="输入标题" 
+                placeholder="Enter title" 
                 value={formData.title}
                 onChange={handleInputChange}
                 required 
@@ -137,27 +137,27 @@ const AddGuideline = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="category">类别</Label>
+              <Label htmlFor="category">Category</Label>
               <Select 
                 value={formData.category} 
                 onValueChange={handleCategoryChange}
               >
                 <SelectTrigger id="category">
-                  <SelectValue placeholder="选择类别" />
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Manuscript Submission">手稿提交</SelectItem>
-                  <SelectItem value="Code Management">代码管理</SelectItem>
-                  <SelectItem value="Reporting">报告</SelectItem>
-                  <SelectItem value="Data Management">数据管理</SelectItem>
-                  <SelectItem value="Ethics">伦理规范</SelectItem>
-                  <SelectItem value="Collaboration">协作</SelectItem>
+                  <SelectItem value="Manuscript Submission">Manuscript Submission</SelectItem>
+                  <SelectItem value="Code Management">Code Management</SelectItem>
+                  <SelectItem value="Reporting">Reporting</SelectItem>
+                  <SelectItem value="Data Management">Data Management</SelectItem>
+                  <SelectItem value="Ethics">Ethics</SelectItem>
+                  <SelectItem value="Collaboration">Collaboration</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="version">版本</Label>
+              <Label htmlFor="version">Version</Label>
               <Input 
                 id="version" 
                 name="version"
@@ -167,11 +167,11 @@ const AddGuideline = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="content">内容</Label>
+              <Label htmlFor="content">Content</Label>
               <Textarea 
                 id="content" 
                 name="content"
-                placeholder="输入指南内容..." 
+                placeholder="Enter guideline content..." 
                 rows={6}
                 value={formData.content}
                 onChange={handleInputChange}
@@ -186,28 +186,28 @@ const AddGuideline = () => {
                 onCheckedChange={handleCheckboxChange}
               />
               <Label htmlFor="mandatory" className="font-medium cursor-pointer">
-                此指南为必须遵守的
+                This guideline is mandatory
               </Label>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="file">上传文件（可选）</Label>
+              <Label htmlFor="file">Upload File (Optional)</Label>
               <Input 
                 id="file" 
                 type="file" 
                 onChange={handleFileChange}
               />
               <p className="text-xs text-muted-foreground">
-                支持的格式：PDF、DOCX、TXT（最大大小：5MB）
+                Supported formats: PDF, DOCX, TXT (Max size: 5MB)
               </p>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button type="button" variant="outline" onClick={() => navigate("/guidelines")}>
-              取消
+              Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "添加中..." : "添加指南"}
+              {isSubmitting ? "Adding..." : "Add Guideline"}
             </Button>
           </CardFooter>
         </form>
