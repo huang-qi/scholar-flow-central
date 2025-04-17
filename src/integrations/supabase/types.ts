@@ -84,6 +84,45 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          department: string | null
+          full_name: string | null
+          id: string
+          tags: string[] | null
+          title: string | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          department?: string | null
+          full_name?: string | null
+          id: string
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          department?: string | null
+          full_name?: string | null
+          id?: string
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           author: string
@@ -204,6 +243,72 @@ export type Database = {
           tags?: string[]
           type?: string
           views?: number
+        }
+        Relationships: []
+      }
+      user_activities: {
+        Row: {
+          activity_date: string
+          activity_level: number
+          activity_type: string
+          created_at: string
+          id: string
+          reference_id: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_date: string
+          activity_level: number
+          activity_type: string
+          created_at?: string
+          id?: string
+          reference_id?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_date?: string
+          activity_level?: number
+          activity_type?: string
+          created_at?: string
+          id?: string
+          reference_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_research_stats: {
+        Row: {
+          discussion_count: number | null
+          id: string
+          last_discussion_date: string | null
+          last_literature_date: string | null
+          last_report_date: string | null
+          literature_count: number | null
+          report_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          discussion_count?: number | null
+          id?: string
+          last_discussion_date?: string | null
+          last_literature_date?: string | null
+          last_report_date?: string | null
+          literature_count?: number | null
+          report_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          discussion_count?: number | null
+          id?: string
+          last_discussion_date?: string | null
+          last_literature_date?: string | null
+          last_report_date?: string | null
+          literature_count?: number | null
+          report_count?: number | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -6,30 +6,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppContext } from "@/context/AppContext";
 import { ArrowUpRight, Book, FileText, MessageSquare, User, Wrench } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const ActivityHeatmap = () => {
-  const generateActivityData = () => {
+const ActivityHeatmap = ({ activities }: { activities: any[] }) => {
+  // 处理活动数据，创建日期-活跃度映射
+  const activityMap = activities.reduce((acc: Record<string, number>, activity) => {
+    const date = activity.activity_date;
+    if (!acc[date]) {
+      acc[date] = 0;
+    }
+    acc[date] = Math.max(acc[date], activity.activity_level);
+    return acc;
+  }, {});
+  
+  // 生成过去90天的日期
+  const generateCalendarData = () => {
     const today = new Date();
-    const daysToShow = 90; // ~3个月
-    const data = [];
+    const daysToShow = 90;
+    const calendarData = [];
     
     for (let i = daysToShow; i >= 0; i--) {
       const date = new Date();
       date.setDate(today.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
       
-      const level = Math.floor(Math.random() * 5);
-      
-      data.push({
-        date: date.toISOString().split('T')[0],
-        level,
+      calendarData.push({
+        date: dateStr,
+        level: activityMap[dateStr] || 0
       });
     }
     
-    return data;
+    return calendarData;
   };
 
-  const activityData = generateActivityData();
+  const activityData = generateCalendarData();
 
   return (
     <div className="space-y-3">
@@ -63,20 +73,53 @@ const ActivityHeatmap = () => {
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
-  const { userProfile, isProfileLoading } = useAppContext();
+  const { 
+    userProfile, 
+    isProfileLoading, 
+    activities, 
+    fetchActivities,
+    stats,
+    fetchStats
+  } = useAppContext();
 
-  const contributionData = {
-    categories: ["报告", "文献", "研究", "工具", "评论"],
-    series: [
-      {
-        name: "贡献",
-        data: [12, 5, 8, 3, 20],
-      },
-    ],
-  };
+  useEffect(() => {
+    // 获取活动数据和统计数据
+    fetchActivities();
+    fetchStats();
+    
+    // 在组件挂载时记录一次仪表板访问活动
+    const recordDashboardVisit = async () => {
+      try {
+        // 将仪表板访问作为一种活动记录，活跃度为1
+        await recordActivity('dashboard', 1);
+      } catch (error) {
+        console.error('记录仪表板访问失败:', error);
+      }
+    };
+    
+    recordDashboardVisit();
+  }, []);
+  
+  // 从AppContext获取recordActivity函数，但如果不存在则提供空函数
+  const { recordActivity = async () => {} } = useAppContext();
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('');
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "从未";
+    
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return "今天";
+    if (diffDays === 1) return "昨天";
+    if (diffDays < 7) return `${diffDays}天前`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前`;
+    return `${Math.floor(diffDays / 30)}个月前`;
   };
 
   return (
@@ -119,7 +162,7 @@ const Dashboard = () => {
 
             <div>
               <h3 className="font-medium mb-3">您的贡献</h3>
-              <ActivityHeatmap />
+              <ActivityHeatmap activities={activities} />
             </div>
           </CardContent>
         </Card>
@@ -188,8 +231,10 @@ const Dashboard = () => {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground">比上月增加2份</p>
+                <div className="text-2xl font-bold">{stats.reportCount}</div>
+                <p className="text-xs text-muted-foreground">
+                  上次更新: {formatDate(stats.lastReportDate)}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -198,8 +243,10 @@ const Dashboard = () => {
                 <Book className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">28</div>
-                <p className="text-xs text-muted-foreground">自上月以来增加8篇</p>
+                <div className="text-2xl font-bold">{stats.literatureCount}</div>
+                <p className="text-xs text-muted-foreground">
+                  上次更新: {formatDate(stats.lastLiteratureDate)}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -208,23 +255,13 @@ const Dashboard = () => {
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">7</div>
-                <p className="text-xs text-muted-foreground">今天新增1个讨论</p>
+                <div className="text-2xl font-bold">{stats.discussionCount}</div>
+                <p className="text-xs text-muted-foreground">
+                  上次更新: {formatDate(stats.lastDiscussionDate)}
+                </p>
               </CardContent>
             </Card>
           </div>
-          {/* <Card className="col-span-3 max-w-3xl mx-auto">
-            <CardHeader>
-              <CardTitle>研究成果分布</CardTitle>
-            </CardHeader>
-            <CardContent className="pl-2">
-              <BarChart
-                categories={contributionData.categories}
-                series={contributionData.series}
-                height={200}
-              />
-            </CardContent>
-          </Card> */}
         </TabsContent>
         
         <TabsContent value="reports" className="space-y-4">
@@ -249,7 +286,11 @@ const Dashboard = () => {
                       </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => recordActivity('report_view', 1)}
+                  >
                     查看
                   </Button>
                 </div>
@@ -285,7 +326,11 @@ const Dashboard = () => {
                       </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => recordActivity('literature_view', 1)}
+                  >
                     查看
                   </Button>
                 </div>
